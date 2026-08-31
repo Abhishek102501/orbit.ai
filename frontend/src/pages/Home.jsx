@@ -250,6 +250,7 @@ export function Home() {
 
               <AutoVideo
                 src={HERO_VIDEO}
+                sound
                 style={{ display: 'block', width: '100%', height: layout.heroVideoHeight, objectFit: 'cover' }}
                 fallback={previewPanel}
               />

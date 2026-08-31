@@ -19,8 +19,15 @@ export function layoutFor(vw) {
     sidePad: isMobile ? '18px' : '40px',
     sectionGap: isMobile ? '52px' : '76px',
     pagePad: isMobile ? '32px 18px 60px' : '48px 40px 80px',
-    footerPad: isMobile ? '36px 18px 24px' : '48px 40px 28px',
+    footerPad: isMobile ? '40px 18px 30px' : isTablet ? '52px 32px 34px' : '60px 40px 36px',
     footerDir: isMobile ? 'column' : 'row',
+    // brand | Discover | Categories. On tablet the brand block spans the full row and the
+    // two nav landmarks share the one below it.
+    footerGridCols: isMobile ? '1fr' : isTablet ? 'repeat(2, minmax(0, 1fr))' : '1.5fr 1fr 1.7fr',
+    footerBrandSpan: isTablet ? 'span 2' : 'auto',
+    footerCategorySpan: 'auto',
+    footerCategoryCols: isMobile ? 2 : isTablet ? 2 : 2,
+    footerNewsletterDir: isMobile || isTablet ? 'column' : 'row',
     mobileMenuBtnDisplay: isDesktopNav ? 'none' : 'flex',
 
     // grids

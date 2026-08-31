@@ -70,5 +70,51 @@ export const SKILL_OPTIONS = [
 
 export const RATING_CHOICES = [0, 4.0, 4.5];
 
-export const HERO_VIDEO = '/assets/Man_interacting_with_AI_holograms_202609010211.mp4';
+export const HERO_VIDEO = '/assets/video_watermark_removed_fixed.mp4';
 export const SHOWCASE_VIDEO = '/uploads/Developer_organizes_AI_tools_202608301748.mp4';
+
+/* ---------------------------------------------------------------------------
+   Footer
+--------------------------------------------------------------------------- */
+
+/**
+ * Footer navigation. Every href here is a route the hash router actually resolves
+ * (`parseRoute()` in hooks/useHashRoute.js knows: /, /discover, /categories, /advisor,
+ * /compare, /saved, /tool/:slug). Nothing else exists yet, so nothing else is linked —
+ * a footer full of links to the 404 screen is worse than a short one.
+ *
+ * When Blog / Help / About / Privacy / Terms pages land, add them here and they appear
+ * in the footer automatically.
+ */
+export const FOOTER_NAV = [
+  {
+    title: 'Discover',
+    links: [
+      { label: 'AI Tools', href: '#/discover' },
+      { label: 'Browse Categories', href: '#/categories' },
+      { label: 'AI Tool Finder', href: '#/advisor' },
+      { label: 'Compare Tools', href: '#/compare' },
+      { label: 'Your Collection', href: '#/saved' },
+    ],
+  },
+];
+
+/**
+ * Social profiles. Deliberately empty: Orbit has no published accounts in this project,
+ * and pointing visitors at a handle nobody has verified is worse than showing nothing.
+ * Fill a `url` in and that icon appears in the footer — no other change needed.
+ */
+export const SOCIAL_LINKS = [
+  { id: 'x', label: 'X', icon: 'brandX', url: '' },
+  { id: 'github', label: 'GitHub', icon: 'brandGithub', url: '' },
+  { id: 'linkedin', label: 'LinkedIn', icon: 'brandLinkedin', url: '' },
+  { id: 'discord', label: 'Discord', icon: 'brandDiscord', url: '' },
+  { id: 'youtube', label: 'YouTube', icon: 'brandYoutube', url: '' },
+];
+
+export const FOOTER_TAGLINE = 'Discover the right AI tools. Compare smarter. Build better.';
+
+export const FOOTER_BLURB =
+  'Orbit.ai helps you discover, explore, and compare AI tools for work, creativity, productivity, and more.';
+
+export const FOOTER_SIGNOFF = 'Made for discovering what’s next.';
