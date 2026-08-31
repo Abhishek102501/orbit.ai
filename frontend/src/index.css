@@ -152,3 +152,19 @@ li {
 @media (prefers-reduced-motion: reduce) {
   .theme-toggle-icon { animation: none; }
 }
+
+/* ---- category cards ----------------------------------------------------
+   The photo scales and lifts a touch on hover. It lives on the image rather
+   than the card so the card's own translate is unaffected, and it is driven by
+   CSS so no hover state has to be tracked in React. Keyboard focus gets the
+   same treatment. The global reduced-motion rule above neutralises both. */
+.cat-photo {
+  transform: scale(1);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease;
+}
+
+.cat-card:hover .cat-photo,
+.cat-card:focus-visible .cat-photo {
+  transform: scale(1.05);
+  filter: brightness(1.06) saturate(1.04);
+}

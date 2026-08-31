@@ -26,6 +26,13 @@ export const DARK = {
   textRgb: '233,233,237',
 
   // --- semantic roles (see the block comment above) ---
+  surfaceRgb: '28,31,46',
+  // Glass chip that sits on top of a photo. Fixed values rather than palette surfaces:
+  // it has to stay legible over whatever the photograph is doing underneath it.
+  glassBg: 'rgba(12,13,20,0.45)',
+  glassBorder: 'rgba(255,255,255,0.22)',
+  glassIcon: '#f1f0f7',
+  glassShadow: '0 6px 18px rgba(0,0,0,0.35)',
   accent: '#9184d9',
   accentText: '#b5abfc',
   accentSoft: 'rgba(145,132,217,0.10)',
@@ -70,6 +77,11 @@ export const LIGHT = {
   // `accent` stays the brand purple in both themes because it is only ever used as a
   // fill or a border. Accent *text* needs its own value: #b5abfc reads at ~1.9:1 on
   // this ground, so light mode uses a deepened purple that clears 4.5:1.
+  surfaceRgb: '251,250,253',
+  glassBg: 'rgba(255,255,255,0.74)',
+  glassBorder: 'rgba(28,26,36,0.16)',
+  glassIcon: '#453a86',
+  glassShadow: '0 6px 18px rgba(46,40,72,0.18)',
   accent: '#9184d9',
   accentText: '#5a4bb5',
   accentSoft: 'rgba(145,132,217,0.12)',

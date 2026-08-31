@@ -20,6 +20,9 @@ export const ICONS = {
   chevronRight: { els: [{ t: 'polyline', points: '9,6 15,12 9,18' }] },
   chevronLeft: { els: [{ t: 'polyline', points: '15,6 9,12 15,18' }] },
   code: { els: [{ t: 'polyline', points: '9,8 4,12 9,16' }, { t: 'polyline', points: '15,8 20,12 15,16' }] },
+  // Writing: a nib on a baseline. The `writing` category has always referenced `edit`,
+  // which had no def — the card rendered an empty icon slot.
+  edit: { els: [{ t: 'path', d: 'M14.5 4.5l4 4L9 18l-4.6.6L5 14z' }, { t: 'line', x1: 4, y1: 21.2, x2: 20, y2: 21.2 }] },
   pen: { els: [{ t: 'path', d: 'M4 20 L4 16 L16 4 L20 8 L8 20 Z' }] },
   image: { els: [{ t: 'rect', x: 3, y: 3, width: 18, height: 18, rx: 2 }, { t: 'circle', cx: 8.5, cy: 8.5, r: 1.5 },
     { t: 'polyline', points: '21,15 16,10 5,21' }] },
