@@ -24,7 +24,7 @@ export function ToolCard({ tool }) {
       }}
       hoverStyle={{
         transform: 'translateY(-5px)',
-        boxShadow: '0 0 0 1px #5d5294, 0 16px 34px rgba(0,0,0,0.4)',
+        boxShadow: `0 0 0 1px ${c.hoverRing}, ${c.shadowCard}`,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
@@ -43,8 +43,8 @@ export function ToolCard({ tool }) {
                 style={{
                   fontSize: '10.5px',
                   fontWeight: 600,
-                  color: '#f5f4ff',
-                  background: '#423a6a',
+                  color: c.badgeText,
+                  background: c.badgeBg,
                   borderRadius: 6,
                   padding: '2px 7px',
                 }}
@@ -58,7 +58,7 @@ export function ToolCard({ tool }) {
               fontSize: '10.5px',
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: `rgba(${c.textRgb},0.5)`,
+              color: c.ink(0.5),
             }}
           >
             {tool.categoryLabel}
@@ -73,7 +73,7 @@ export function ToolCard({ tool }) {
             width: 32,
             height: 32,
             flex: 'none',
-            border: `1px solid rgba(${c.textRgb},0.16)`,
+            border: `1px solid ${c.ink(0.16)}`,
             borderRadius: 8,
             background: 'transparent',
             color: tool.saveColor,
@@ -90,7 +90,7 @@ export function ToolCard({ tool }) {
       <p
         style={{
           fontSize: 13,
-          color: `rgba(${c.textRgb},0.68)`,
+          color: c.ink(0.68),
           lineHeight: 1.55,
           margin: 0,
           flex: 1,
@@ -109,8 +109,8 @@ export function ToolCard({ tool }) {
             key={f}
             style={{
               fontSize: '10.5px',
-              color: `rgba(${c.textRgb},0.6)`,
-              background: `rgba(${c.textRgb},0.04)`,
+              color: c.ink(0.6),
+              background: c.ink(0.04),
               borderRadius: 6,
               padding: '3px 8px',
             }}
@@ -126,14 +126,14 @@ export function ToolCard({ tool }) {
           alignItems: 'center',
           gap: 10,
           fontSize: '12.5px',
-          color: `rgba(${c.textRgb},0.7)`,
+          color: c.ink(0.7),
         }}
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: c.text }}>
           <Icon name="starFilled" size={13} />
           {tool.rating}
         </span>
-        <span style={{ color: `rgba(${c.textRgb},0.35)` }}>({tool.reviewCount})</span>
+        <span style={{ color: c.ink(0.35) }}>({tool.reviewCount})</span>
         <span
           style={{
             marginLeft: 'auto',
@@ -187,8 +187,8 @@ export function ToolCard({ tool }) {
             fontSize: '12.5px',
             padding: '9px 10px',
             borderRadius: 8,
-            border: '1px solid #9184d9',
-            color: '#9184d9',
+            border: `1px solid ${c.accent}`,
+            color: c.accentText,
           }}
         >
           Visit
@@ -202,7 +202,7 @@ export function ToolCard({ tool }) {
           textDecoration: 'none',
           textAlign: 'center',
           fontSize: 12,
-          color: `rgba(${c.textRgb},0.55)`,
+          color: c.ink(0.55),
           marginTop: -2,
         }}
       >

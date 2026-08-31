@@ -46,7 +46,7 @@ export function ToolDetail() {
         style={{
           textDecoration: 'none',
           fontSize: '12.5px',
-          color: `rgba(${c.textRgb},0.55)`,
+          color: c.ink(0.55),
           display: 'inline-flex',
           alignItems: 'center',
           gap: 5,
@@ -103,8 +103,8 @@ export function ToolDetail() {
             <span
               style={{
                 fontSize: 11,
-                color: `rgba(${c.textRgb},0.55)`,
-                background: `rgba(${c.textRgb},0.05)`,
+                color: c.ink(0.55),
+                background: c.ink(0.05),
                 padding: '3px 10px',
                 borderRadius: 6,
               }}
@@ -120,12 +120,12 @@ export function ToolDetail() {
               alignItems: 'center',
               flexWrap: 'wrap',
               fontSize: '13.5px',
-              color: `rgba(${c.textRgb},0.7)`,
+              color: c.ink(0.7),
             }}
           >
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <Icon name="starFilled" size={13} />
-              {card.rating} <span style={{ color: `rgba(${c.textRgb},0.4)` }}>({card.reviewCount})</span>
+              {card.rating} <span style={{ color: c.ink(0.4) }}>({card.reviewCount})</span>
             </span>
             <span
               style={{
@@ -140,7 +140,7 @@ export function ToolDetail() {
               {card.pricingLabel}
             </span>
             {card.matchScore ? (
-              <span style={{ fontWeight: 700, color: '#b5abfc' }}>{card.matchScore}% Orbit Match</span>
+              <span style={{ fontWeight: 700, color: c.accentText }}>{card.matchScore}% Orbit Match</span>
             ) : null}
           </div>
         </div>
@@ -150,7 +150,7 @@ export function ToolDetail() {
             type="button"
             onClick={card.onToggleSave}
             style={{
-              border: `1px solid rgba(${c.textRgb},0.16)`,
+              border: `1px solid ${c.ink(0.16)}`,
               background: 'transparent',
               color: c.text,
               padding: '11px 16px',
@@ -190,8 +190,8 @@ export function ToolDetail() {
             rel="noopener"
             style={{
               textDecoration: 'none',
-              background: '#9184d9',
-              color: '#161826',
+              background: c.accent,
+              color: c.onAccent,
               padding: '11px 18px',
               borderRadius: 8,
               fontSize: 13,
@@ -207,7 +207,7 @@ export function ToolDetail() {
         </div>
       </div>
 
-      <p style={{ fontSize: 15, color: `rgba(${c.textRgb},0.78)`, lineHeight: 1.7, margin: '0 0 28px' }}>
+      <p style={{ fontSize: 15, color: c.ink(0.78), lineHeight: 1.7, margin: '0 0 28px' }}>
         {card.description}
       </p>
 
@@ -223,7 +223,7 @@ export function ToolDetail() {
         <span
           style={{
             fontSize: 11,
-            color: '#b5abfc',
+            color: c.accentText,
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
           }}
@@ -241,9 +241,9 @@ export function ToolDetail() {
             {(card.features || []).map((f) => (
               <div
                 key={f}
-                style={{ display: 'flex', gap: 8, fontSize: '13.5px', color: `rgba(${c.textRgb},0.78)` }}
+                style={{ display: 'flex', gap: 8, fontSize: '13.5px', color: c.ink(0.78) }}
               >
-                <span style={{ color: '#9184d9', flex: 'none', marginTop: 1 }}>
+                <span style={{ color: c.accentText, flex: 'none', marginTop: 1 }}>
                   <Icon name="check" size={15} />
                 </span>
                 {f}
@@ -257,7 +257,7 @@ export function ToolDetail() {
           <p
             style={{
               fontSize: '13.5px',
-              color: `rgba(${c.textRgb},0.78)`,
+              color: c.ink(0.78),
               margin: '0 0 14px',
               lineHeight: 1.6,
             }}
@@ -270,8 +270,8 @@ export function ToolDetail() {
                 key={p}
                 style={{
                   fontSize: '11.5px',
-                  color: `rgba(${c.textRgb},0.65)`,
-                  background: `rgba(${c.textRgb},0.05)`,
+                  color: c.ink(0.65),
+                  background: c.ink(0.05),
                   padding: '4px 10px',
                   borderRadius: 6,
                 }}
@@ -286,14 +286,14 @@ export function ToolDetail() {
       {/* ------------------------------------------------- pros / cons */}
       <div style={{ display: 'flex', flexDirection: layout.detailColDir, gap: 28, marginBottom: 36 }}>
         <div style={{ flex: 1 }}>
-          <h2 style={{ fontSize: 17, margin: '0 0 14px', color: '#a8e0b8' }}>Pros</h2>
+          <h2 style={{ fontSize: 17, margin: '0 0 14px', color: c.pros }}>Pros</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {(card.pros || []).map((p) => (
               <div
                 key={p}
-                style={{ display: 'flex', gap: 8, fontSize: '13.5px', color: `rgba(${c.textRgb},0.78)` }}
+                style={{ display: 'flex', gap: 8, fontSize: '13.5px', color: c.ink(0.78) }}
               >
-                <span style={{ color: '#a8e0b8', flex: 'none' }}>+</span>
+                <span style={{ color: c.pros, flex: 'none' }}>+</span>
                 {p}
               </div>
             ))}
@@ -301,14 +301,14 @@ export function ToolDetail() {
         </div>
 
         <div style={{ flex: 1 }}>
-          <h2 style={{ fontSize: 17, margin: '0 0 14px', color: '#e0a8a8' }}>Cons</h2>
+          <h2 style={{ fontSize: 17, margin: '0 0 14px', color: c.cons }}>Cons</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {(card.cons || []).map((con) => (
               <div
                 key={con}
-                style={{ display: 'flex', gap: 8, fontSize: '13.5px', color: `rgba(${c.textRgb},0.78)` }}
+                style={{ display: 'flex', gap: 8, fontSize: '13.5px', color: c.ink(0.78) }}
               >
-                <span style={{ color: '#e0a8a8', flex: 'none' }}>−</span>
+                <span style={{ color: c.cons, flex: 'none' }}>−</span>
                 {con}
               </div>
             ))}
@@ -318,8 +318,8 @@ export function ToolDetail() {
 
       <div
         style={{
-          background: 'linear-gradient(135deg, rgba(38,42,96,0.4), rgba(35,37,50,0.5))',
-          border: '1px solid rgba(145,132,217,0.25)',
+          background: c.verdictPanel,
+          border: `1px solid ${c.accentBorder}`,
           borderRadius: 12,
           padding: 22,
           marginBottom: 44,
@@ -328,7 +328,7 @@ export function ToolDetail() {
         <span
           style={{
             fontSize: 11,
-            color: '#b5abfc',
+            color: c.accentText,
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
           }}

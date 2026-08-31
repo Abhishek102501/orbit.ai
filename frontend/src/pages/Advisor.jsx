@@ -11,7 +11,7 @@ function ChipGroup({ label, options, value, onPick, c }) {
       <span
         style={{
           fontSize: 11,
-          color: `rgba(${c.textRgb},0.45)`,
+          color: c.ink(0.45),
           textTransform: 'uppercase',
           letterSpacing: '0.06em',
         }}
@@ -30,9 +30,9 @@ function ChipGroup({ label, options, value, onPick, c }) {
                 fontSize: 12,
                 padding: '6px 11px',
                 borderRadius: 7,
-                border: `1px solid ${active ? '#9184d9' : `rgba(${c.textRgb},0.16)`}`,
-                background: active ? 'rgba(145,132,217,0.14)' : 'transparent',
-                color: active ? '#b5abfc' : c.text,
+                border: `1px solid ${active ? c.accent : c.ink(0.16)}`,
+                background: active ? c.accentSoftStrong : 'transparent',
+                color: active ? c.accentText : c.text,
                 cursor: 'pointer',
               }}
             >
@@ -104,7 +104,7 @@ export function Advisor() {
             fontSize: 11,
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
-            color: '#b5abfc',
+            color: c.accentText,
             border: '1px solid rgba(145,132,217,0.35)',
             background: 'rgba(145,132,217,0.08)',
             padding: '6px 14px',
@@ -118,7 +118,7 @@ export function Advisor() {
         <h1 style={{ fontSize: layout.advisorTitleSize, margin: '0 0 12px', letterSpacing: '-0.01em' }}>
           Describe what you need. Orbit finds the fit.
         </h1>
-        <p style={{ color: `rgba(${c.textRgb},0.65)`, fontSize: '14.5px', margin: '0 auto', maxWidth: 540 }}>
+        <p style={{ color: c.ink(0.65), fontSize: '14.5px', margin: '0 auto', maxWidth: 540 }}>
           A deterministic match engine — ranked recommendations, explained in plain language, no
           external AI required.
         </p>
@@ -128,10 +128,10 @@ export function Advisor() {
         onSubmit={onSubmit}
         style={{
           background: c.surface,
-          border: `1px solid rgba(${c.textRgb},0.14)`,
+          border: `1px solid ${c.ink(0.14)}`,
           borderRadius: 14,
           padding: 20,
-          boxShadow: `0 0 0 1px ${c.ring}, 0 20px 50px rgba(0,0,0,0.4)`,
+          boxShadow: `0 0 0 1px ${c.ring}, ${c.shadowMd}`,
         }}
       >
         <textarea
@@ -160,7 +160,7 @@ export function Advisor() {
             gap: 16,
             marginTop: 14,
             paddingTop: 16,
-            borderTop: `1px solid rgba(${c.textRgb},0.1)`,
+            borderTop: `1px solid ${c.ink(0.1)}`,
           }}
         >
           <ChipGroup
@@ -182,7 +182,7 @@ export function Advisor() {
             <span
               style={{
                 fontSize: 11,
-                color: `rgba(${c.textRgb},0.45)`,
+                color: c.ink(0.45),
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
               }}
@@ -196,7 +196,7 @@ export function Advisor() {
                 minHeight: 32,
                 padding: '0 8px',
                 background: c.surfaceAlt,
-                border: `1px solid rgba(${c.textRgb},0.16)`,
+                border: `1px solid ${c.ink(0.16)}`,
                 borderRadius: 7,
                 color: c.text,
                 fontSize: '12.5px',
@@ -217,8 +217,8 @@ export function Advisor() {
           <button
             type="submit"
             style={{
-              background: '#9184d9',
-              color: '#161826',
+              background: c.accent,
+              color: c.onAccent,
               border: 'none',
               padding: '12px 26px',
               borderRadius: 9,
@@ -254,9 +254,9 @@ export function Advisor() {
               fontSize: '12.5px',
               padding: '8px 14px',
               borderRadius: 20,
-              border: `1px solid rgba(${c.textRgb},0.14)`,
-              background: `rgba(${c.textRgb},0.02)`,
-              color: `rgba(${c.textRgb},0.7)`,
+              border: `1px solid ${c.ink(0.14)}`,
+              background: c.ink(0.02),
+              color: c.ink(0.7),
               cursor: 'pointer',
             }}
           >
@@ -282,11 +282,11 @@ export function Advisor() {
               height: 34,
               borderRadius: '50%',
               border: '2px solid rgba(145,132,217,0.25)',
-              borderTopColor: '#9184d9',
+              borderTopColor: c.accent,
               animation: 'orbitSpin 0.8s linear infinite',
             }}
           />
-          <p style={{ fontSize: '13.5px', color: `rgba(${c.textRgb},0.55)` }}>
+          <p style={{ fontSize: '13.5px', color: c.ink(0.55) }}>
             Scoring the catalog against your requirement…
           </p>
         </div>
@@ -308,7 +308,7 @@ export function Advisor() {
               onClick={resetAdvisor}
               style={{
                 background: 'none',
-                border: `1px solid rgba(${c.textRgb},0.16)`,
+                border: `1px solid ${c.ink(0.16)}`,
                 color: c.text,
                 fontSize: '12.5px',
                 padding: '8px 14px',
@@ -323,8 +323,8 @@ export function Advisor() {
           {/* ------------------------------------------------- best match */}
           <div
             style={{
-              border: '1px solid #9184d9',
-              background: 'linear-gradient(135deg, rgba(145,132,217,0.12), rgba(35,37,50,0.5))',
+              border: `1px solid ${c.accent}`,
+              background: c.matchPanel,
               borderRadius: 14,
               padding: 26,
               marginBottom: 18,
@@ -336,8 +336,8 @@ export function Advisor() {
                   fontSize: 11,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
-                  color: '#161826',
-                  background: '#9184d9',
+                  color: c.onAccent,
+                  background: c.accent,
                   padding: '4px 10px',
                   borderRadius: 6,
                   fontWeight: 700,
@@ -365,19 +365,19 @@ export function Advisor() {
                   >
                     {best.name}
                   </a>
-                  <span style={{ fontSize: 22, fontWeight: 700, color: '#b5abfc' }}>
+                  <span style={{ fontSize: 22, fontWeight: 700, color: c.accentText }}>
                     {best.score}% Match
                   </span>
                 </div>
 
-                <p style={{ color: `rgba(${c.textRgb},0.7)`, fontSize: '13.5px', margin: '8px 0 14px' }}>
+                <p style={{ color: c.ink(0.7), fontSize: '13.5px', margin: '8px 0 14px' }}>
                   {best.description}
                 </p>
 
                 <p
                   style={{
                     fontSize: 12,
-                    color: `rgba(${c.textRgb},0.5)`,
+                    color: c.ink(0.5),
                     margin: '0 0 10px',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
@@ -397,7 +397,7 @@ export function Advisor() {
                         color: c.text,
                       }}
                     >
-                      <span style={{ color: '#9184d9', flex: 'none', marginTop: 1 }}>
+                      <span style={{ color: c.accentText, flex: 'none', marginTop: 1 }}>
                         <Icon name="check" size={15} />
                       </span>
                       {rs}
@@ -410,8 +410,8 @@ export function Advisor() {
                     href={best.detailHref}
                     style={{
                       textDecoration: 'none',
-                      background: '#9184d9',
-                      color: '#161826',
+                      background: c.accent,
+                      color: c.onAccent,
                       padding: '10px 20px',
                       borderRadius: 8,
                       fontSize: '13.5px',
@@ -426,8 +426,8 @@ export function Advisor() {
                     rel="noopener"
                     style={{
                       textDecoration: 'none',
-                      border: '1px solid #9184d9',
-                      color: '#9184d9',
+                      border: `1px solid ${c.accent}`,
+                      color: c.accentText,
                       padding: '10px 20px',
                       borderRadius: 8,
                       fontSize: '13.5px',
@@ -439,7 +439,7 @@ export function Advisor() {
                     type="button"
                     onClick={best.onToggleSave}
                     style={{
-                      border: `1px solid rgba(${c.textRgb},0.16)`,
+                      border: `1px solid ${c.ink(0.16)}`,
                       background: 'transparent',
                       color: c.text,
                       padding: '10px 16px',
@@ -463,7 +463,7 @@ export function Advisor() {
           <p
             style={{
               fontSize: 12,
-              color: `rgba(${c.textRgb},0.5)`,
+              color: c.ink(0.5),
               margin: '0 0 10px',
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
@@ -498,9 +498,9 @@ export function Advisor() {
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: '14.5px', fontWeight: 500 }}>{a.name}</div>
-                  <div style={{ fontSize: 12, color: `rgba(${c.textRgb},0.55)` }}>{a.reasonsJoined}</div>
+                  <div style={{ fontSize: 12, color: c.ink(0.55) }}>{a.reasonsJoined}</div>
                 </div>
-                <span style={{ fontSize: 16, fontWeight: 700, color: '#b5abfc', flex: 'none' }}>
+                <span style={{ fontSize: 16, fontWeight: 700, color: c.accentText, flex: 'none' }}>
                   {a.score}%
                 </span>
               </a>

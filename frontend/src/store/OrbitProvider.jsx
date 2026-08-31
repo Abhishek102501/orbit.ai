@@ -130,10 +130,21 @@ export function OrbitProvider({ children }) {
     };
   }, []);
 
-  // Keep <body> in step with the active theme, as the design does.
+  // Keep <body> in step with the active theme, as the design does, and publish the few
+  // palette roles that stylesheet rules need — global link colour, selection, focus ring
+  // — so index.css does not have to hardcode the dark-theme values.
   useEffect(() => {
-    document.body.style.background = theme === 'light' ? '#f2f1f7' : '#161826';
-    document.body.style.color = theme === 'light' ? '#1c1a24' : '#e9e9ed';
+    const p = paletteFor(theme);
+    const root = document.documentElement;
+
+    document.body.style.background = p.bg;
+    document.body.style.color = p.text;
+
+    root.setAttribute('data-theme', theme);
+    root.style.setProperty('--orbit-link', p.accentText);
+    root.style.setProperty('--orbit-link-hover', p.accent);
+    root.style.setProperty('--orbit-focus', p.accent);
+    root.style.setProperty('--orbit-selection', p.accentSoftStrong);
   }, [theme]);
 
   useEffect(

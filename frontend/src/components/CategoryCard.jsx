@@ -3,10 +3,12 @@ import Icon from './Icon.jsx';
 import PhotoBackdrop from './PhotoBackdrop.jsx';
 import { useOrbit } from '../store/OrbitProvider.jsx';
 
-const HOVER = {
+/** Hover lift. The ring and shadow come from the palette so the card separates from
+ *  the ground in both themes instead of stamping a dark-only shadow. */
+const hoverFor = (c) => ({
   transform: 'translateY(-4px)',
-  boxShadow: '0 0 0 1px #5d5294, 0 14px 30px rgba(0,0,0,0.35)',
-};
+  boxShadow: `0 0 0 1px ${c.hoverRing}, ${c.shadowCard}`,
+});
 
 /**
  * Fixed-size card used by the home-page marquee. Photo bleeds behind a gradient scrim,
@@ -36,14 +38,14 @@ export function MarqueeCategoryCard({ category, count, photoWidth = 400 }) {
         position: 'relative',
         overflow: 'hidden',
       }}
-      hoverStyle={HOVER}
+      hoverStyle={hoverFor(c)}
     >
       <PhotoBackdrop photo={category.photo} width={photoWidth} opacity={0.5} />
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: `linear-gradient(180deg, rgba(28,31,46,0.3), ${c.surface} 92%)`,
+          background: `linear-gradient(180deg, ${c.scrim}, ${c.surface} 92%)`,
         }}
       />
       <span
@@ -52,8 +54,8 @@ export function MarqueeCategoryCard({ category, count, photoWidth = 400 }) {
           width: 48,
           height: 48,
           borderRadius: 12,
-          background: 'rgba(145,132,217,0.14)',
-          color: '#b5abfc',
+          background: c.accentSoftStrong,
+          color: c.accentText,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -64,7 +66,7 @@ export function MarqueeCategoryCard({ category, count, photoWidth = 400 }) {
       <span style={{ position: 'relative', fontSize: 19, fontWeight: 500, marginTop: 'auto' }}>
         {category.name}
       </span>
-      <span style={{ position: 'relative', fontSize: 13, color: `rgba(${c.textRgb},0.55)` }}>
+      <span style={{ position: 'relative', fontSize: 13, color: c.ink(0.55) }}>
         {count} tools
       </span>
     </Hoverable>
@@ -95,14 +97,14 @@ export function CategoryCard({ category, count }) {
         position: 'relative',
         overflow: 'hidden',
       }}
-      hoverStyle={HOVER}
+      hoverStyle={hoverFor(c)}
     >
       <PhotoBackdrop photo={category.photo} width={700} opacity={0.5} />
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: `linear-gradient(180deg, rgba(28,31,46,0.25), ${c.surface} 90%)`,
+          background: `linear-gradient(180deg, ${c.scrimSoft}, ${c.surface} 90%)`,
         }}
       />
       <span
@@ -111,8 +113,8 @@ export function CategoryCard({ category, count }) {
           width: 48,
           height: 48,
           borderRadius: 12,
-          background: 'rgba(145,132,217,0.14)',
-          color: '#b5abfc',
+          background: c.accentSoftStrong,
+          color: c.accentText,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -122,7 +124,7 @@ export function CategoryCard({ category, count }) {
       </span>
       <div style={{ position: 'relative' }}>
         <div style={{ fontSize: 18, fontWeight: 500, marginBottom: 6 }}>{category.name}</div>
-        <p style={{ fontSize: 13, color: `rgba(${c.textRgb},0.6)`, margin: 0, lineHeight: 1.5 }}>
+        <p style={{ fontSize: 13, color: c.ink(0.6), margin: 0, lineHeight: 1.5 }}>
           {category.tagline}
         </p>
       </div>
@@ -130,7 +132,7 @@ export function CategoryCard({ category, count }) {
         style={{
           position: 'relative',
           fontSize: 12,
-          color: '#b5abfc',
+          color: c.accentText,
           marginTop: 'auto',
           display: 'flex',
           alignItems: 'center',

@@ -50,7 +50,7 @@ export function Discover() {
     minHeight: 38,
     padding: '0 10px',
     background: c.surfaceAlt,
-    border: `1px solid rgba(${c.textRgb},0.16)`,
+    border: `1px solid ${c.ink(0.16)}`,
     borderRadius: 8,
     color: c.text,
     fontSize: '13.5px',
@@ -60,7 +60,7 @@ export function Discover() {
   const labelStyle = {
     display: 'block',
     fontSize: 12,
-    color: `rgba(${c.textRgb},0.55)`,
+    color: c.ink(0.55),
     marginBottom: 6,
   };
 
@@ -103,7 +103,7 @@ export function Discover() {
           }}
         >
           <h1 style={{ fontSize: 32, margin: '0 0 8px' }}>Discover AI Tools</h1>
-          <p style={{ color: `rgba(${c.textRgb},0.65)`, fontSize: 14, margin: 0 }}>
+          <p style={{ color: c.ink(0.65), fontSize: 14, margin: 0 }}>
             Search, filter, and browse the full Orbit catalog.
           </p>
         </div>
@@ -126,7 +126,7 @@ export function Discover() {
               alignItems: 'center',
               gap: 8,
               fontSize: 13,
-              color: `rgba(${c.textRgb},0.7)`,
+              color: c.ink(0.7),
             }}
           >
             <Icon name="sliders" size={15} />
@@ -139,7 +139,7 @@ export function Discover() {
                   marginLeft: 'auto',
                   background: 'none',
                   border: 'none',
-                  color: '#b5abfc',
+                  color: c.accentText,
                   fontSize: 12,
                   cursor: 'pointer',
                 }}
@@ -208,8 +208,8 @@ export function Discover() {
                       fontSize: 12,
                       padding: '7px 12px',
                       borderRadius: 7,
-                      border: `1px solid rgba(${c.textRgb},0.16)`,
-                      background: active ? '#9184d9' : 'transparent',
+                      border: `1px solid ${c.ink(0.16)}`,
+                      background: active ? c.accent : 'transparent',
                       color: active ? c.bg : c.text,
                       cursor: 'pointer',
                     }}
@@ -233,7 +233,7 @@ export function Discover() {
                 alignItems: 'center',
                 gap: 8,
                 background: c.surface,
-                border: `1px solid rgba(${c.textRgb},0.14)`,
+                border: `1px solid ${c.ink(0.14)}`,
                 borderRadius: 9,
                 padding: '0 12px',
               }}
@@ -262,7 +262,7 @@ export function Discover() {
                 minHeight: 42,
                 padding: '0 12px',
                 background: c.surface,
-                border: `1px solid rgba(${c.textRgb},0.14)`,
+                border: `1px solid ${c.ink(0.14)}`,
                 borderRadius: 9,
                 color: c.text,
                 fontSize: 13,
@@ -276,7 +276,7 @@ export function Discover() {
             </select>
           </div>
 
-          <p style={{ fontSize: '12.5px', color: `rgba(${c.textRgb},0.45)`, margin: '0 0 18px' }}>
+          <p style={{ fontSize: '12.5px', color: c.ink(0.45), margin: '0 0 18px' }}>
             {filteredTools.length} tools found
           </p>
 
@@ -290,7 +290,7 @@ export function Discover() {
                     borderRadius: 12,
                     height: 280,
                     boxShadow: `0 0 0 1px ${c.ring}`,
-                    backgroundImage: `linear-gradient(90deg, ${c.surface} 0%, #262a3c 50%, ${c.surface} 100%)`,
+                    backgroundImage: `linear-gradient(90deg, ${c.surface} 0%, ${c.shimmerMid} 50%, ${c.surface} 100%)`,
                     backgroundSize: '800px 100%',
                     animation: 'shimmer 1.6s infinite linear',
                   }}
@@ -314,21 +314,21 @@ export function Discover() {
                   display: 'flex',
                   justifyContent: 'center',
                   marginBottom: 14,
-                  color: `rgba(${c.textRgb},0.3)`,
+                  color: c.ink(0.3),
                 }}
               >
                 <Icon name="search" size={34} />
               </div>
               <h3 style={{ margin: '0 0 6px', fontSize: 17 }}>No tools match those filters</h3>
-              <p style={{ color: `rgba(${c.textRgb},0.55)`, fontSize: '13.5px', margin: '0 0 18px' }}>
+              <p style={{ color: c.ink(0.55), fontSize: '13.5px', margin: '0 0 18px' }}>
                 Try widening your search or clearing a filter.
               </p>
               <button
                 type="button"
                 onClick={clearFilters}
                 style={{
-                  background: '#9184d9',
-                  color: '#161826',
+                  background: c.accent,
+                  color: c.onAccent,
                   border: 'none',
                   padding: '10px 20px',
                   borderRadius: 8,
@@ -355,7 +355,7 @@ export function Discover() {
                     type="button"
                     onClick={() => setDiscoverVisible(discoverVisible + 12)}
                     style={{
-                      border: `1px solid rgba(${c.textRgb},0.16)`,
+                      border: `1px solid ${c.ink(0.16)}`,
                       background: 'transparent',
                       color: c.text,
                       padding: '11px 22px',

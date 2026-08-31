@@ -1,13 +1,19 @@
 import BrandLogo, { BrandMark } from './BrandLogo.jsx';
-import { DARK } from '../lib/palette.js';
+import { useOrbit } from '../store/OrbitProvider.jsx';
 
-/** Loading state shown until the catalog and stored preferences have resolved. */
+/**
+ * Loading state shown until the catalog and stored preferences have resolved. It paints
+ * its own full-screen ground, so it reads the palette rather than the dark scheme —
+ * otherwise a light-mode visitor gets a dark screen before the app appears.
+ */
 export function Splash() {
+  const { c, logoSrc } = useOrbit();
+
   return (
     <div
       style={{
         minHeight: '100vh',
-        background: DARK.bg,
+        background: c.bg,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -30,8 +36,8 @@ export function Splash() {
             position: 'absolute',
             inset: 0,
             borderRadius: '50%',
-            border: '1.5px solid rgba(145,132,217,0.2)',
-            borderTopColor: '#9184d9',
+            border: `1.5px solid ${c.accentSoftStrong}`,
+            borderTopColor: c.accent,
             animation: 'orbitSpin 1.1s linear infinite',
           }}
         />
@@ -39,11 +45,7 @@ export function Splash() {
       </div>
 
       <div style={{ animation: 'fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.15s both' }}>
-        <BrandLogo
-          src="/assets/orbit-logo-full.png"
-          height={26}
-          glow="0 0 10px rgba(145,132,217,0.4)"
-        />
+        <BrandLogo src={logoSrc} height={26} glow={c.logoGlow} color={c.text} markColor={c.accentText} />
       </div>
 
       <div
@@ -51,7 +53,7 @@ export function Splash() {
           fontSize: 11,
           letterSpacing: '0.14em',
           textTransform: 'uppercase',
-          color: 'rgba(233,233,237,0.4)',
+          color: c.ink(0.45),
         }}
       >
         Loading your AI ecosystem

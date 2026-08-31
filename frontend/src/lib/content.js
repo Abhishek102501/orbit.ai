@@ -70,5 +70,5 @@ export const SKILL_OPTIONS = [
 
 export const RATING_CHOICES = [0, 4.0, 4.5];
 
-export const HERO_VIDEO = '/assets/orbit_clean_watermark_removed.mp4';
+export const HERO_VIDEO = '/assets/Man_interacting_with_AI_holograms_202609010211.mp4';
 export const SHOWCASE_VIDEO = '/uploads/Developer_organizes_AI_tools_202608301748.mp4';

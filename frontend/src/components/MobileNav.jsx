@@ -10,7 +10,7 @@ export function MobileNav() {
     color: c.text,
     fontSize: 16,
     padding: '12px 6px',
-    borderBottom: `1px solid rgba(${c.textRgb},0.08)`,
+    borderBottom: `1px solid ${c.ink(0.08)}`,
   };
 
   return (
@@ -19,7 +19,7 @@ export function MobileNav() {
         position: 'fixed',
         inset: 0,
         zIndex: 50,
-        background: 'rgba(10,11,18,0.7)',
+        background: c.scrimOverlay,
         backdropFilter: 'blur(6px)',
       }}
       onClick={toggleMobileNav}
@@ -37,7 +37,7 @@ export function MobileNav() {
           display: 'flex',
           flexDirection: 'column',
           gap: 6,
-          borderLeft: `1px solid rgba(${c.textRgb},0.12)`,
+          borderLeft: `1px solid ${c.ink(0.12)}`,
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -49,7 +49,7 @@ export function MobileNav() {
             style={{
               width: 34,
               height: 34,
-              border: `1px solid rgba(${c.textRgb},0.16)`,
+              border: `1px solid ${c.ink(0.16)}`,
               borderRadius: 8,
               background: 'transparent',
               color: c.text,
@@ -69,7 +69,7 @@ export function MobileNav() {
         <a
           href="#/advisor"
           onClick={toggleMobileNav}
-          style={{ ...link, color: '#9184d9', display: 'flex', alignItems: 'center', gap: 8 }}
+          style={{ ...link, color: c.accentText, display: 'flex', alignItems: 'center', gap: 8 }}
         >
           <Icon name="sparkle" size={13} />
           AI Advisor

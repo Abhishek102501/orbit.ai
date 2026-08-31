@@ -21,10 +21,32 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
 }
 
-a { color: #9184d9; }
-a:hover { color: #b5abfc; }
+/* The theme publishes these on :root (see OrbitProvider). The fallbacks are the dark
+   values, so the sheet still renders correctly before the first effect runs. */
+a { color: var(--orbit-link, #9184d9); }
+a:hover { color: var(--orbit-link-hover, #b5abfc); }
 
-::selection { background: rgba(145, 132, 217, 0.3); }
+::selection { background: var(--orbit-selection, rgba(145, 132, 217, 0.3)); }
+
+/* Inputs paint their text from the palette, so deriving the placeholder from
+   currentColor keeps it readable in both themes instead of falling back to the UA's
+   fixed grey. */
+input::placeholder,
+textarea::placeholder {
+  color: currentColor;
+  opacity: 0.62;
+}
+
+/* Every input in the app sets `outline: none` inline for the borderless look; this puts
+   a keyboard focus ring back without changing the resting appearance. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--orbit-focus, #9184d9);
+  outline-offset: 2px;
+}
 
 h1, h2, h3 {
   font-family: 'Inter', system-ui, sans-serif;

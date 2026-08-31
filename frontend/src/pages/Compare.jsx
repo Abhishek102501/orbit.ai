@@ -92,7 +92,7 @@ export function Compare() {
       }}
     >
       <h1 style={{ fontSize: 32, margin: '0 0 8px' }}>Compare Tools</h1>
-      <p style={{ color: `rgba(${c.textRgb},0.6)`, fontSize: 14, margin: '0 0 28px' }}>
+      <p style={{ color: c.ink(0.6), fontSize: 14, margin: '0 0 28px' }}>
         Put up to four AI tools side-by-side and see what actually differs.
       </p>
 
@@ -111,21 +111,21 @@ export function Compare() {
               display: 'flex',
               justifyContent: 'center',
               marginBottom: 14,
-              color: `rgba(${c.textRgb},0.3)`,
+              color: c.ink(0.3),
             }}
           >
             <Icon name="layers" size={34} />
           </div>
           <h3 style={{ margin: '0 0 6px', fontSize: 17 }}>Nothing to compare yet</h3>
-          <p style={{ color: `rgba(${c.textRgb},0.55)`, fontSize: '13.5px', margin: '0 0 18px' }}>
+          <p style={{ color: c.ink(0.55), fontSize: '13.5px', margin: '0 0 18px' }}>
             Add tools from Discover, Saved, or a Tool page.
           </p>
           <a
             href="#/discover"
             style={{
               textDecoration: 'none',
-              background: '#9184d9',
-              color: '#161826',
+              background: c.accent,
+              color: c.onAccent,
               padding: '10px 20px',
               borderRadius: 8,
               fontSize: '13.5px',
@@ -138,7 +138,7 @@ export function Compare() {
       ) : null}
 
       {needsMore ? (
-        <p style={{ fontSize: 13, color: `rgba(${c.textRgb},0.55)`, marginBottom: 16 }}>
+        <p style={{ fontSize: 13, color: c.ink(0.55), marginBottom: 16 }}>
           Add at least one more tool to see a full comparison.
         </p>
       ) : null}
@@ -184,7 +184,7 @@ export function Compare() {
                 onClick={t.onToggleCompare}
                 style={{
                   fontSize: '11.5px',
-                  color: `rgba(${c.textRgb},0.5)`,
+                  color: c.ink(0.5),
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
@@ -201,8 +201,8 @@ export function Compare() {
             <div
               style={{
                 width: 240,
-                background: `rgba(${c.textRgb},0.02)`,
-                border: `1px dashed rgba(${c.textRgb},0.2)`,
+                background: c.ink(0.02),
+                border: `1px dashed ${c.ink(0.2)}`,
                 borderRadius: 10,
                 padding: 12,
                 display: 'flex',
@@ -217,7 +217,7 @@ export function Compare() {
                 style={{
                   minHeight: 32,
                   background: c.surfaceAlt,
-                  border: `1px solid rgba(${c.textRgb},0.14)`,
+                  border: `1px solid ${c.ink(0.14)}`,
                   borderRadius: 6,
                   padding: '0 8px',
                   color: c.text,
@@ -271,10 +271,10 @@ export function Compare() {
                       textAlign: 'left',
                       padding: '10px 14px',
                       fontSize: 11,
-                      color: `rgba(${c.textRgb},0.5)`,
+                      color: c.ink(0.5),
                       textTransform: 'uppercase',
                       letterSpacing: '0.06em',
-                      borderBottom: `1px solid rgba(${c.textRgb},0.12)`,
+                      borderBottom: `1px solid ${c.ink(0.12)}`,
                     }}
                   >
                     Criteria
@@ -287,7 +287,7 @@ export function Compare() {
                         padding: '10px 14px',
                         fontSize: 13,
                         color: c.text,
-                        borderBottom: `1px solid rgba(${c.textRgb},0.12)`,
+                        borderBottom: `1px solid ${c.ink(0.12)}`,
                       }}
                     >
                       {t.name}
@@ -301,8 +301,8 @@ export function Compare() {
                     <td
                       style={{
                         padding: '12px 14px',
-                        color: `rgba(${c.textRgb},0.55)`,
-                        borderBottom: `1px solid rgba(${c.textRgb},0.06)`,
+                        color: c.ink(0.55),
+                        borderBottom: `1px solid ${c.ink(0.06)}`,
                         whiteSpace: 'nowrap',
                       }}
                     >
@@ -314,7 +314,7 @@ export function Compare() {
                         style={{
                           padding: '12px 14px',
                           color: c.text,
-                          borderBottom: `1px solid rgba(${c.textRgb},0.06)`,
+                          borderBottom: `1px solid ${c.ink(0.06)}`,
                         }}
                       >
                         {v}
@@ -329,8 +329,8 @@ export function Compare() {
           {recommendation ? (
             <div
               style={{
-                background: 'linear-gradient(135deg, rgba(38,42,96,0.4), rgba(35,37,50,0.5))',
-                border: '1px solid rgba(145,132,217,0.25)',
+                background: c.verdictPanel,
+                border: `1px solid ${c.accentBorder}`,
                 borderRadius: 12,
                 padding: 22,
               }}
@@ -338,7 +338,7 @@ export function Compare() {
               <span
                 style={{
                   fontSize: 11,
-                  color: '#b5abfc',
+                  color: c.accentText,
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
                 }}

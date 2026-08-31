@@ -10,7 +10,7 @@ import { useState } from 'react';
  *
  * See README.md → "Brand assets".
  */
-export function BrandLogo({ src, height = 30, glow = '0 0 10px rgba(145,132,217,0.35)' }) {
+export function BrandLogo({ src, height = 30, glow = '0 0 10px rgba(145,132,217,0.35)', color, markColor }) {
   const [failed, setFailed] = useState(false);
 
   if (!failed) {
@@ -24,11 +24,22 @@ export function BrandLogo({ src, height = 30, glow = '0 0 10px rgba(145,132,217,
     );
   }
 
-  return <BrandLogoFallback height={height} glow={glow} />;
+  return <BrandLogoFallback height={height} glow={glow} color={color} markColor={markColor} />;
 }
 
-/** Vector stand-in: orbit mark + wordmark, scaled to the requested pixel height. */
-export function BrandLogoFallback({ height = 30, glow = '0 0 10px rgba(145,132,217,0.35)' }) {
+/**
+ * Vector stand-in: orbit mark + wordmark, scaled to the requested pixel height.
+ *
+ * `color` is the wordmark ink. It has to follow the theme — the mark was previously
+ * pinned to the dark-theme ink (#e9e9ed), which is why "Orbit" vanished against the
+ * light ground while the purple ".ai" stayed visible.
+ */
+export function BrandLogoFallback({
+  height = 30,
+  glow = '0 0 10px rgba(145,132,217,0.35)',
+  color = '#e9e9ed',
+  markColor = '#b5abfc',
+}) {
   return (
     <svg
       viewBox="0 0 132 32"
@@ -48,7 +59,7 @@ export function BrandLogoFallback({ height = 30, glow = '0 0 10px rgba(145,132,2
         strokeWidth="1.6"
         transform="rotate(-28 16 16)"
       />
-      <circle cx="16" cy="16" r="5.2" fill="#b5abfc" />
+      <circle cx="16" cy="16" r="5.2" fill={markColor} />
       <text
         x="38"
         y="22.5"
@@ -56,7 +67,7 @@ export function BrandLogoFallback({ height = 30, glow = '0 0 10px rgba(145,132,2
         fontSize="20"
         fontWeight="800"
         letterSpacing="-0.8"
-        fill="#e9e9ed"
+        fill={color}
       >
         Orbit
         <tspan fill="#9184d9">.ai</tspan>

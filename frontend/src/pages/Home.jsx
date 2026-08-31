@@ -34,7 +34,6 @@ export function Home() {
   const {
     c,
     layout,
-    isLight,
     heroQuery,
     setHeroQuery,
     setAdvisorText,
@@ -76,17 +75,17 @@ export function Home() {
     go('#/advisor');
   };
 
-  /** Shown in light theme, and as the stand-in if the hero .mp4 is not present. */
+  /** Stand-in shown only if the hero .mp4 is missing or fails to decode. */
   const previewPanel = (
     <div
       style={{
         width: '100%',
         height: layout.heroVideoHeight,
-        background: 'linear-gradient(135deg, #2a2550, #423a6a 50%, #2a2550)',
+        background: c.preview,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: `rgba(${c.textRgb},0.6)`,
+        color: c.ink(0.6),
         fontSize: 12,
         letterSpacing: '0.08em',
         textTransform: 'uppercase',
@@ -136,9 +135,9 @@ export function Home() {
                 fontSize: 11,
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
-                color: '#b5abfc',
-                border: '1px solid rgba(145,132,217,0.35)',
-                background: 'rgba(145,132,217,0.08)',
+                color: c.accentText,
+                border: `1px solid ${c.accentBorder}`,
+                background: c.accentSoft,
                 padding: '6px 14px',
                 borderRadius: 20,
                 marginBottom: 24,
@@ -170,7 +169,7 @@ export function Home() {
               <span
                 style={{
                   display: 'block',
-                  color: `rgba(${c.textRgb},0.55)`,
+                  color: c.ink(0.55),
                   animation: 'fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.24s both',
                 }}
               >
@@ -182,7 +181,7 @@ export function Home() {
               style={{
                 fontSize: layout.heroSubSize,
                 lineHeight: 1.62,
-                color: `rgba(${c.textRgb},0.62)`,
+                color: c.ink(0.62),
                 margin: 0,
                 maxWidth: 520,
                 marginLeft: layout.heroSubMarginAuto ? 'auto' : undefined,
@@ -224,13 +223,13 @@ export function Home() {
                 borderRadius: 18,
                 overflow: 'hidden',
                 border: '1px solid rgba(145,132,217,0.22)',
-                boxShadow: `0 0 0 1px ${c.ring}, 0 30px 70px rgba(0,0,0,0.55)`,
+                boxShadow: `0 0 0 1px ${c.ring}, ${c.shadowLg}`,
                 transition:
                   'transform 0.6s cubic-bezier(0.16,1,0.3,1), box-shadow 0.6s cubic-bezier(0.16,1,0.3,1)',
               }}
               hoverStyle={{
                 transform: 'translateY(-4px)',
-                boxShadow: `0 0 0 1px ${c.ring}, 0 40px 90px rgba(0,0,0,0.6), 0 0 60px rgba(145,132,217,0.16)`,
+                boxShadow: `0 0 0 1px ${c.hoverRing}, ${c.shadowLg}, 0 0 60px rgba(145,132,217,0.16)`,
               }}
             >
               <div
@@ -241,7 +240,7 @@ export function Home() {
                   alignItems: 'center',
                   gap: 6,
                   padding: '0 12px',
-                  borderBottom: `1px solid rgba(${c.textRgb},0.08)`,
+                  borderBottom: `1px solid ${c.ink(0.08)}`,
                 }}
               >
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#e0605a' }} />
@@ -249,15 +248,11 @@ export function Home() {
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#5aa876' }} />
               </div>
 
-              {!isLight ? (
-                <AutoVideo
-                  src={HERO_VIDEO}
-                  style={{ display: 'block', width: '100%', height: layout.heroVideoHeight, objectFit: 'cover' }}
-                  fallback={previewPanel}
-                />
-              ) : (
-                previewPanel
-              )}
+              <AutoVideo
+                src={HERO_VIDEO}
+                style={{ display: 'block', width: '100%', height: layout.heroVideoHeight, objectFit: 'cover' }}
+                fallback={previewPanel}
+              />
 
               <div
                 style={{
@@ -265,7 +260,7 @@ export function Home() {
                   inset: 0,
                   top: 34,
                   pointerEvents: 'none',
-                  boxShadow: 'inset 0 0 60px rgba(0,0,0,0.4)',
+                  boxShadow: c.vignette,
                 }}
               />
             </Hoverable>
@@ -287,10 +282,10 @@ export function Home() {
           style={{
             position: 'relative',
             background: c.surface,
-            border: '1px solid rgba(145,132,217,0.22)',
+            border: `1px solid ${c.accentBorder}`,
             borderRadius: 18,
             padding: layout.finderPad,
-            boxShadow: `0 0 0 1px ${c.ring}, 0 24px 60px rgba(0,0,0,0.4)`,
+            boxShadow: `0 0 0 1px ${c.ring}, ${c.shadowMd}`,
           }}
         >
           <div
@@ -306,7 +301,7 @@ export function Home() {
           />
           <div style={{ position: 'relative' }}>
             <h2 style={{ fontSize: 26, margin: '0 0 8px' }}>Find My AI Tool</h2>
-            <p style={{ fontSize: 14, color: `rgba(${c.textRgb},0.6)`, margin: '0 0 22px' }}>
+            <p style={{ fontSize: 14, color: c.ink(0.6), margin: '0 0 22px' }}>
               What are you trying to accomplish?
             </p>
 
@@ -316,8 +311,8 @@ export function Home() {
                 display: 'flex',
                 flexDirection: layout.heroFormDir,
                 gap: 10,
-                background: `rgba(${c.textRgb},0.03)`,
-                border: `1px solid rgba(${c.textRgb},0.14)`,
+                background: c.ink(0.03),
+                border: `1px solid ${c.ink(0.14)}`,
                 borderRadius: 14,
                 padding: 8,
               }}
@@ -345,10 +340,10 @@ export function Home() {
                 style={{
                   minHeight: 48,
                   padding: '0 22px 0 26px',
-                  background: '#9184d9',
-                  border: '1px solid #9184d9',
+                  background: c.accent,
+                  border: `1px solid ${c.accent}`,
                   borderRadius: 10,
-                  color: '#161826',
+                  color: c.onAccent,
                   fontWeight: 600,
                   fontSize: 14,
                   cursor: 'pointer',
@@ -398,9 +393,9 @@ export function Home() {
                     fontSize: '12.5px',
                     padding: '8px 14px',
                     borderRadius: 20,
-                    border: `1px solid rgba(${c.textRgb},0.14)`,
-                    background: `rgba(${c.textRgb},0.02)`,
-                    color: `rgba(${c.textRgb},0.75)`,
+                    border: `1px solid ${c.ink(0.14)}`,
+                    background: c.ink(0.02),
+                    color: c.ink(0.75),
                     cursor: 'pointer',
                   }}
                 >
@@ -417,7 +412,7 @@ export function Home() {
         <SectionHeading
           title="Popular Categories"
           action={
-            <a href="#/categories" style={{ textDecoration: 'none', fontSize: 13, color: '#b5abfc' }}>
+            <a href="#/categories" style={{ textDecoration: 'none', fontSize: 13, color: c.accentText }}>
               View all
               <Icon name="chevronRight" size={13} style={{ display: 'inline-block', verticalAlign: 'middle' }} />
             </a>
@@ -478,7 +473,7 @@ export function Home() {
         <SectionHeading
           title="Trending AI Tools"
           action={
-            <a href="#/discover" style={{ textDecoration: 'none', fontSize: 13, color: '#b5abfc' }}>
+            <a href="#/discover" style={{ textDecoration: 'none', fontSize: 13, color: c.accentText }}>
               See all
               <Icon name="chevronRight" size={13} style={{ display: 'inline-block', verticalAlign: 'middle' }} />
             </a>
@@ -496,7 +491,7 @@ export function Home() {
         <SectionHeading
           title="Featured Tools"
           action={
-            <span style={{ fontSize: 12, color: `rgba(${c.textRgb},0.5)` }}>
+            <span style={{ fontSize: 12, color: c.ink(0.5) }}>
               Editorially selected, beginner friendly
             </span>
           }
@@ -518,9 +513,9 @@ export function Home() {
             fontSize: 11,
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
-            color: '#b5abfc',
-            border: '1px solid rgba(145,132,217,0.35)',
-            background: 'rgba(145,132,217,0.08)',
+            color: c.accentText,
+            border: `1px solid ${c.accentBorder}`,
+            background: c.accentSoft,
             padding: '6px 14px',
             borderRadius: 20,
             marginBottom: 18,
@@ -532,7 +527,7 @@ export function Home() {
         <h2 style={{ fontSize: 28, margin: '0 0 10px' }}>See Orbit in motion</h2>
         <p
           style={{
-            color: `rgba(${c.textRgb},0.6)`,
+            color: c.ink(0.6),
             fontSize: 14,
             margin: '0 auto 30px',
             maxWidth: 520,
@@ -548,7 +543,7 @@ export function Home() {
             margin: '0 auto',
             borderRadius: 18,
             overflow: 'hidden',
-            boxShadow: '0 0 0 1px #423a6a, 0 30px 70px rgba(0,0,0,0.55)',
+            boxShadow: `0 0 0 1px ${c.ring}, ${c.shadowLg}`,
             background: c.surface,
           }}
         >
@@ -560,11 +555,11 @@ export function Home() {
                 style={{
                   width: '100%',
                   height: 420,
-                  background: 'linear-gradient(135deg, #2a2550, #423a6a 50%, #2a2550)',
+                  background: c.preview,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: `rgba(${c.textRgb},0.6)`,
+                  color: c.ink(0.6),
                   fontSize: 12,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
@@ -578,7 +573,7 @@ export function Home() {
             style={{
               position: 'absolute',
               inset: 0,
-              boxShadow: 'inset 0 0 60px rgba(0,0,0,0.35)',
+              boxShadow: c.vignetteSoft,
               pointerEvents: 'none',
             }}
           />
@@ -591,7 +586,7 @@ export function Home() {
         <p
           style={{
             textAlign: 'center',
-            color: `rgba(${c.textRgb},0.6)`,
+            color: c.ink(0.6),
             margin: '0 0 30px',
             fontSize: 14,
           }}
@@ -614,8 +609,8 @@ export function Home() {
                   width: 34,
                   height: 34,
                   borderRadius: 9,
-                  background: 'rgba(145,132,217,0.14)',
-                  color: '#b5abfc',
+                  background: c.accentSoftStrong,
+                  color: c.accentText,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -628,7 +623,7 @@ export function Home() {
                 {s.n}
               </div>
               <h3 style={{ fontSize: 16, margin: '0 0 6px' }}>{s.title}</h3>
-              <p style={{ fontSize: 13, color: `rgba(${c.textRgb},0.65)`, margin: 0, lineHeight: 1.55 }}>
+              <p style={{ fontSize: 13, color: c.ink(0.65), margin: 0, lineHeight: 1.55 }}>
                 {s.body}
               </p>
             </div>
@@ -643,13 +638,13 @@ export function Home() {
           {WHY_POINTS.map((w) => (
             <div
               key={w.title}
-              style={{ padding: 22, borderRadius: 10, border: `1px solid rgba(${c.textRgb},0.1)` }}
+              style={{ padding: 22, borderRadius: 10, border: `1px solid ${c.ink(0.1)}` }}
             >
-              <span style={{ color: '#b5abfc', marginBottom: 12, display: 'inline-flex' }}>
+              <span style={{ color: c.accentText, marginBottom: 12, display: 'inline-flex' }}>
                 <Icon name={w.icon} size={20} />
               </span>
               <h3 style={{ fontSize: 15, margin: '0 0 6px' }}>{w.title}</h3>
-              <p style={{ fontSize: 13, color: `rgba(${c.textRgb},0.65)`, margin: 0, lineHeight: 1.55 }}>
+              <p style={{ fontSize: 13, color: c.ink(0.65), margin: 0, lineHeight: 1.55 }}>
                 {w.body}
               </p>
             </div>
@@ -670,8 +665,8 @@ export function Home() {
       >
         <div
           style={{
-            background: 'linear-gradient(135deg, rgba(38,42,96,0.55), rgba(35,37,50,0.4))',
-            border: '1px solid rgba(145,132,217,0.25)',
+            background: c.ctaPanel,
+            border: `1px solid ${c.accentBorder}`,
             borderRadius: 16,
             padding: layout.ctaPad,
           }}
@@ -679,7 +674,7 @@ export function Home() {
           <h2 style={{ fontSize: 28, margin: '0 0 12px' }}>Stop guessing. Start matching.</h2>
           <p
             style={{
-              color: `rgba(${c.textRgb},0.68)`,
+              color: c.ink(0.68),
               margin: '0 auto 24px',
               fontSize: 14,
               maxWidth: 480,
@@ -694,8 +689,8 @@ export function Home() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              background: '#9184d9',
-              color: '#161826',
+              background: c.accent,
+              color: c.onAccent,
               fontWeight: 600,
               padding: '13px 26px',
               borderRadius: 9,

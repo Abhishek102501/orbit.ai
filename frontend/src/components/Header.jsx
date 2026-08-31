@@ -6,7 +6,7 @@ import { useOrbit } from '../store/OrbitProvider.jsx';
 export function Header() {
   const { c, layout, route, theme, logoSrc, isLight, toggleTheme, toggleMobileNav, saved } = useOrbit();
 
-  const navColor = (name) => (route.name === name ? '#b5abfc' : c.text);
+  const navColor = (name) => (route.name === name ? c.accentText : c.text);
   const themeLabel = isLight ? 'Switch to dark mode' : 'Switch to light mode';
 
   return (
@@ -21,7 +21,7 @@ export function Header() {
         padding: layout.navPadding,
         background: `rgba(${c.bgRgb},0.82)`,
         backdropFilter: 'blur(14px)',
-        borderBottom: `1px solid rgba(${c.textRgb},0.1)`,
+        borderBottom: `1px solid ${c.ink(0.1)}`,
       }}
     >
       <a
@@ -35,7 +35,7 @@ export function Header() {
           marginRight: 'auto',
         }}
       >
-        <BrandLogo src={logoSrc} height={30} glow="0 0 10px rgba(145,132,217,0.35)" />
+        <BrandLogo src={logoSrc} height={30} glow={c.logoGlow} color={c.text} markColor={c.accentText} />
       </a>
 
       <Hoverable
@@ -49,10 +49,10 @@ export function Header() {
           width: 36,
           height: 36,
           flex: 'none',
-          border: `1px solid rgba(${c.textRgb},0.22)`,
+          border: `1px solid ${c.ink(0.22)}`,
           borderRadius: 8,
-          background: `rgba(${c.textRgb},0.05)`,
-          color: `rgba(${c.textRgb},0.9)`,
+          background: c.ink(0.05),
+          color: c.ink(0.9),
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
@@ -60,9 +60,9 @@ export function Header() {
           transition: 'background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease',
         }}
         hoverStyle={{
-          borderColor: 'rgba(145,132,217,0.55)',
-          background: 'rgba(145,132,217,0.12)',
-          color: '#9184d9',
+          borderColor: c.accentBorder,
+          background: c.accentSoftStrong,
+          color: c.accentText,
         }}
       >
         {/* keyed on the theme so the icon remounts and plays the swap animation */}
@@ -85,11 +85,11 @@ export function Header() {
               alignItems: 'center',
               gap: 6,
               whiteSpace: 'nowrap',
-              color: '#9184d9',
+              color: c.accentText,
               padding: '7px 14px',
-              border: '1px solid #9184d9',
+              border: `1px solid ${c.accent}`,
               borderRadius: 8,
-              background: 'rgba(145,132,217,0.1)',
+              background: c.accentSoft,
             }}
           >
             <Icon name="sparkle" size={13} />
@@ -117,8 +117,8 @@ export function Header() {
               <span
                 style={{
                   fontSize: 10,
-                  background: '#423a6a',
-                  color: '#f5f4ff',
+                  background: c.badgeBg,
+                  color: c.badgeText,
                   borderRadius: 10,
                   padding: '1px 6px',
                   fontWeight: 600,
@@ -141,7 +141,7 @@ export function Header() {
           height: 38,
           alignItems: 'center',
           justifyContent: 'center',
-          border: `1px solid rgba(${c.textRgb},0.16)`,
+          border: `1px solid ${c.ink(0.16)}`,
           borderRadius: 8,
           background: 'transparent',
           color: c.text,

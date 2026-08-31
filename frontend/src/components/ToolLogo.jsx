@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useOrbit } from '../store/OrbitProvider.jsx';
 
 /**
  * The tool avatar: initials underneath, the site's favicon laid over the top.
@@ -6,6 +7,7 @@ import { useState } from 'react';
  * `onerror="this.style.display='none'"` behaviour in the design.
  */
 export function ToolLogo({ initials, logoUrl, size = 42, radius = 10, fontSize = 14, style }) {
+  const { c } = useOrbit();
   const [failed, setFailed] = useState(false);
 
   return (
@@ -14,8 +16,8 @@ export function ToolLogo({ initials, logoUrl, size = 42, radius = 10, fontSize =
         width: size,
         height: size,
         borderRadius: radius,
-        background: 'rgba(145,132,217,0.14)',
-        color: '#b5abfc',
+        background: c.accentSoftStrong,
+        color: c.accentText,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

@@ -17,7 +17,7 @@ export function Categories() {
       <h1 style={{ fontSize: 32, margin: '0 0 8px' }}>Categories</h1>
       <p
         style={{
-          color: `rgba(${c.textRgb},0.6)`,
+          color: c.ink(0.6),
           fontSize: 14,
           margin: '0 0 32px',
           maxWidth: 560,

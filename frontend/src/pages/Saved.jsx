@@ -35,7 +35,7 @@ export function Saved() {
       >
         <div>
           <h1 style={{ fontSize: 32, margin: '0 0 8px' }}>Saved Tools</h1>
-          <p style={{ color: `rgba(${c.textRgb},0.6)`, fontSize: 14, margin: 0 }}>
+          <p style={{ color: c.ink(0.6), fontSize: 14, margin: 0 }}>
             Your shortlist, ready to compare or revisit.
           </p>
         </div>
@@ -45,8 +45,8 @@ export function Saved() {
             type="button"
             onClick={compareSavedNow}
             style={{
-              background: '#9184d9',
-              color: '#161826',
+              background: c.accent,
+              color: c.onAccent,
               border: 'none',
               padding: '11px 20px',
               borderRadius: 8,
@@ -79,21 +79,21 @@ export function Saved() {
               display: 'flex',
               justifyContent: 'center',
               marginBottom: 14,
-              color: `rgba(${c.textRgb},0.3)`,
+              color: c.ink(0.3),
             }}
           >
             <Icon name="bookmark" size={34} />
           </div>
           <h3 style={{ margin: '0 0 6px', fontSize: 17 }}>No saved tools yet</h3>
-          <p style={{ color: `rgba(${c.textRgb},0.55)`, fontSize: '13.5px', margin: '0 0 18px' }}>
+          <p style={{ color: c.ink(0.55), fontSize: '13.5px', margin: '0 0 18px' }}>
             Save tools from Discover or the AI Advisor to build your shortlist.
           </p>
           <a
             href="#/discover"
             style={{
               textDecoration: 'none',
-              background: '#9184d9',
-              color: '#161826',
+              background: c.accent,
+              color: c.onAccent,
               padding: '10px 20px',
               borderRadius: 8,
               fontSize: '13.5px',
