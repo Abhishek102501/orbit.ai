@@ -1,0 +1,132 @@
+/* ---------------------------------------------------------------------------
+   Global styles — ported verbatim from the Orbit.dc.html <helmet> block.
+   Fonts are loaded from index.html (Inter + JetBrains Mono).
+--------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  margin: 0;
+  background: #161826;
+  color: #e9e9ed;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+a { color: #9184d9; }
+a:hover { color: #b5abfc; }
+
+::selection { background: rgba(145, 132, 217, 0.3); }
+
+h1, h2, h3 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* React serializes inline styles with a space after the colon, so both forms
+   are matched to keep the original mono-uppercase treatment intact. */
+[style*="text-transform:uppercase"],
+[style*="text-transform: uppercase"] {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+}
+
+nav a {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes floatGlow {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(0, -18px); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mediaIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+@keyframes flySend {
+  from { transform: translateY(0.1em); }
+  to   { transform: translateY(-0.1em); }
+}
+@keyframes iconSwap {
+  from { opacity: 0; transform: rotate(-70deg) scale(0.85); }
+  to   { opacity: 1; transform: rotate(0deg) scale(1); }
+}
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes splashPulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50%      { transform: scale(1.07); opacity: 1; }
+}
+
+#catMarqueeTrack:hover { animation-play-state: paused; }
+
+#heroSendBtn:hover .send-icon-wrap { animation: flySend 0.6s ease-in-out infinite alternate; }
+#heroSendBtn:hover .send-icon { transform: translateX(1.2em) rotate(45deg) scale(1.1); }
+#heroSendBtn:hover .send-label { transform: translateX(5em); }
+#heroSendBtn:active { transform: scale(0.95); }
+
+/* ---- theme toggle -------------------------------------------------------
+   The button paints from the active palette inline; these rules only add the
+   swap animation and a focus ring that inline styles cannot express. */
+.theme-toggle-icon {
+  animation: iconSwap 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center center;
+}
+
+#themeToggle:focus-visible {
+  outline: 2px solid #9184d9;
+  outline-offset: 2px;
+}
+
+/* ---- theme switch ------------------------------------------------------
+   Every surface in the app paints from the `c` palette as an inline style, so
+   the switch is instant unless the properties themselves are transitioned.
+   Only colour properties are listed, and any element that declares its own
+   inline `transition` (hover states, reveals) keeps it. */
+body,
+header,
+section,
+nav,
+aside,
+article,
+div,
+p,
+h1, h2, h3, h4,
+span,
+a,
+button,
+input,
+select,
+textarea,
+label,
+li {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-icon { animation: none; }
+}

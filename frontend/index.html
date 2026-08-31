@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/assets/orbit-mark-icon.png" />
+    <title>Orbit.ai — Find the right AI. Not just another AI.</title>
+    <meta
+      name="description"
+      content="Tell Orbit what you're trying to accomplish. Discover, compare, and choose the AI tools that actually fit your needs."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+  </head>
+  <body>
+    <script>
+      /* Paint the stored Orbit theme on <body> before React mounts, so a light-mode
+         visitor never sees the dark ground flash first. The provider reads the same
+         key and owns the theme from its first render onward. */
+      (function () {
+        try {
+          var light = localStorage.getItem('orbit_theme') === 'light';
+          document.body.style.background = light ? '#f2f1f7' : '#161826';
+          document.body.style.color = light ? '#1c1a24' : '#e9e9ed';
+        } catch (e) {
+          /* storage unavailable — the provider still applies the default */
+        }
+      })();
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

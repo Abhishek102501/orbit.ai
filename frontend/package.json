@@ -1,0 +1,22 @@
+{
+  "name": "orbit-ai-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Orbit.ai — Find the right AI. Not just another AI.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "smoke": "vite-node ssr-smoke.jsx"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11",
+    "vite-node": "^6.0.0"
+  }
+}

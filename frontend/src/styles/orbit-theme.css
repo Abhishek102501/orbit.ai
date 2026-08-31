@@ -1,0 +1,58 @@
+/* ---------------------------------------------------------------------------
+   Orbit's semantic layer over the Nocturne design system.
+
+   Nocturne (src/styles/nocturne.css) is the source of truth for primitives —
+   the ramps, the type stack, the spacing/radius/shadow scales. It is a
+   dark-only system. This file maps those primitives onto the roles Orbit's
+   screens actually name (`bg`, `surface`, `surfaceAlt`, `chrome`, `ring`,
+   `text` — the design's `c` object), and adds the light scheme Orbit layers
+   on top as its own override.
+
+   Rule of thumb: never override a `--color-*` here. Nocturne owns those.
+   Orbit's theme switches only the `--orbit-*` roles.
+--------------------------------------------------------------------------- */
+
+:root {
+  /* --- surfaces: dark (Nocturne's native ground) --- */
+  --orbit-bg: var(--color-bg);                    /* #161826 — exact Nocturne ground */
+  --orbit-surface: #1c1f2e;                       /* Orbit adds a step between bg and Nocturne's surface */
+  --orbit-surface-alt: var(--color-surface);      /* #232532 — exact Nocturne surface */
+  --orbit-chrome: #20222f;                        /* Orbit-only: the fake browser titlebar */
+  --orbit-ring: var(--color-neutral-800);         /* #3f424d — the ring in --shadow-sm */
+  --orbit-text: var(--color-text);                /* #e9e9ed */
+
+  /* Text/fill that sits on an accent-filled surface. Deliberately does NOT
+     follow --orbit-bg: it stays the dark ground in both themes, because the
+     accent is light enough in either that dark type is what reads. */
+  --orbit-on-accent: var(--color-bg);
+
+  /* --- Orbit-only hues with no Nocturne equivalent --- */
+  --orbit-pros: #a8e0b8;
+  --orbit-cons: #e0a8a8;
+  --orbit-chrome-red: #e0605a;
+  --orbit-chrome-amber: #dbb15a;
+  --orbit-chrome-green: #5aa876;
+  --orbit-preview-from: #2a2550;                  /* light-theme / no-video hero panel */
+  --orbit-scrim: #0a0b12;                         /* mobile nav backdrop */
+  --orbit-shimmer: #262a3c;                       /* skeleton sweep midpoint */
+
+  /* Orbit extends Nocturne's Inter-only stack with a mono face for the
+     uppercase labels and nav. Documented as an extension, not a Nocturne token. */
+  --orbit-font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+}
+
+/* --- surfaces: light (Orbit's own scheme; Nocturne has no light mode) --- */
+:root[data-theme='light'] {
+  --orbit-bg: #f2f1f7;
+  --orbit-surface: #fbfafd;
+  --orbit-surface-alt: #eeecf4;
+  --orbit-chrome: #e3e0ec;
+  --orbit-ring: #dcd9e8;
+  --orbit-text: #1c1a24;
+}
+
+/* Orbit paints from its own roles rather than Nocturne's fixed dark ground. */
+body {
+  background: var(--orbit-bg);
+  color: var(--orbit-text);
+}
