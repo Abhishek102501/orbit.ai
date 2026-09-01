@@ -1,8 +1,43 @@
+import { useEffect, useRef } from 'react';
 import Icon from './Icon.jsx';
 import { useOrbit } from '../store/OrbitProvider.jsx';
 
 export function MobileNav() {
   const { c, mobileNavOpen, toggleMobileNav, saved } = useOrbit();
+  const closeRef = useRef(null);
+  const restoreFocusTo = useRef(null);
+
+  // While the drawer is open: hold the page still behind it, close on Escape, close if
+  // the route changes some other way (browser back, a deep link), and park focus on the
+  // close button so a keyboard or screen-reader user lands inside the drawer.
+  useEffect(() => {
+    if (!mobileNavOpen) return undefined;
+
+    restoreFocusTo.current = document.activeElement;
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = 'hidden';
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') toggleMobileNav();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('hashchange', toggleMobileNav);
+
+    const id = window.setTimeout(() => {
+      if (closeRef.current) closeRef.current.focus();
+    }, 0);
+
+    return () => {
+      body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('hashchange', toggleMobileNav);
+      window.clearTimeout(id);
+      const back = restoreFocusTo.current;
+      if (back && typeof back.focus === 'function') back.focus();
+    };
+  }, [mobileNavOpen, toggleMobileNav]);
+
   if (!mobileNavOpen) return null;
 
   const link = {
@@ -25,6 +60,7 @@ export function MobileNav() {
       onClick={toggleMobileNav}
     >
       <nav
+        aria-label="Site"
         style={{
           position: 'absolute',
           top: 0,
@@ -33,30 +69,36 @@ export function MobileNav() {
           width: '78%',
           maxWidth: 320,
           background: c.surface,
-          padding: '24px 22px',
+          // Fixed to the viewport, so it sits outside the body's safe-area padding and
+          // has to inset itself away from the notch and the home indicator.
+          padding: 'calc(24px + env(safe-area-inset-top)) calc(22px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) 22px',
           display: 'flex',
           flexDirection: 'column',
           gap: 6,
+          overflowY: 'auto',
           borderLeft: `1px solid ${c.ink(0.12)}`,
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
           <button
+            ref={closeRef}
             type="button"
+            className="mobile-nav-close"
             onClick={toggleMobileNav}
-            aria-label="Close"
+            aria-label="Close menu"
             style={{
               width: 34,
               height: 34,
               border: `1px solid ${c.ink(0.16)}`,
               borderRadius: 8,
-              background: 'transparent',
+              background: c.ink(0.05),
               color: c.text,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              flex: 'none',
             }}
           >
             <Icon name="close" size={16} />

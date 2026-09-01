@@ -15,11 +15,29 @@ export const CATEGORIES = [
 
 export const HERO_PHOTO = '1451187580459-43490279c0fa';
 export const FALLBACK_PHOTO = '1518770660439-4636190af475';
+
+/** Stands in for a product video that has not been supplied yet. */
+export const PRODUCT_STILL_PHOTO = '1517180102446-f3ece451e9d8';
 export function unsplashUrl(id, w, q) {
   return (
     'https://images.unsplash.com/photo-' + id +
     '?auto=format&fit=crop&w=' + (w || 900) + '&q=' + (q || 60)
   );
+}
+
+/**
+ * Square, face-centred crop for an avatar. `fit=facearea` lets Unsplash pick the crop
+ * around the detected face, which is what keeps a 32px circle from cutting off a chin.
+ */
+export function unsplashAvatarUrl(id, size) {
+  return (
+    'https://images.unsplash.com/photo-' + id +
+    '?auto=format&fit=facearea&facepad=3&w=' + size + '&h=' + size + '&q=70'
+  );
+}
+
+export function unsplashAvatarSrcSet(id, size) {
+  return unsplashAvatarUrl(id, size) + ' 1x, ' + unsplashAvatarUrl(id, size * 2) + ' 2x';
 }
 
 /**

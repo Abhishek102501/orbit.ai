@@ -14,7 +14,7 @@ export function Categories() {
         animation: 'fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both',
       }}
     >
-      <h1 style={{ fontSize: 32, margin: '0 0 8px' }}>Categories</h1>
+      <h1 style={{ fontSize: layout.pageTitleSize, margin: '0 0 8px' }}>Categories</h1>
       <p
         style={{
           color: c.ink(0.6),

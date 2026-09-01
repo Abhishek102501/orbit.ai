@@ -4,7 +4,8 @@ import Hoverable from './Hoverable.jsx';
 import { useOrbit } from '../store/OrbitProvider.jsx';
 
 export function Header() {
-  const { c, layout, route, theme, logoSrc, isLight, toggleTheme, toggleMobileNav, saved } = useOrbit();
+  const { c, layout, route, theme, logoSrc, isLight, toggleTheme, toggleMobileNav, mobileNavOpen, saved } =
+    useOrbit();
 
   const navColor = (name) => (route.name === name ? c.accentText : c.text);
   const themeLabel = isLight ? 'Switch to dark mode' : 'Switch to light mode';
@@ -15,15 +16,25 @@ export function Header() {
         position: 'sticky',
         top: 0,
         zIndex: 40,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
         padding: layout.navPadding,
         background: `rgba(${c.bgRgb},0.82)`,
         backdropFilter: 'blur(14px)',
         borderBottom: `1px solid ${c.ink(0.1)}`,
       }}
     >
+      {/* The bar stays full-bleed; its contents share the page's max width so that on a
+          very wide monitor the nav does not drift away from the centred content column.
+          Below that width this is a no-op. */}
+      <div
+        style={{
+          maxWidth: 1240,
+          margin: '0 auto',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+        }}
+      >
       <a
         href="#/"
         style={{
@@ -133,8 +144,10 @@ export function Header() {
 
       <button
         type="button"
+        className="nav-menu-btn"
         onClick={toggleMobileNav}
-        aria-label="Menu"
+        aria-label="Open menu"
+        aria-expanded={mobileNavOpen}
         style={{
           display: layout.mobileMenuBtnDisplay,
           width: 38,
@@ -150,6 +163,7 @@ export function Header() {
       >
         <Icon name="menu" size={18} />
       </button>
+      </div>
     </header>
   );
 }

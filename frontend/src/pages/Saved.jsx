@@ -34,7 +34,7 @@ export function Saved() {
         }}
       >
         <div>
-          <h1 style={{ fontSize: 32, margin: '0 0 8px' }}>Saved Tools</h1>
+          <h1 style={{ fontSize: layout.pageTitleSize, margin: '0 0 8px' }}>Saved Tools</h1>
           <p style={{ color: c.ink(0.6), fontSize: 14, margin: 0 }}>
             Your shortlist, ready to compare or revisit.
           </p>

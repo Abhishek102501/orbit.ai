@@ -41,8 +41,13 @@ export function layoutFor(vw) {
 
     // hero
     heroPad: isMobile ? '40px 18px 0' : '84px 40px 0',
-    heroTitleSize: isMobile ? '34px' : isTablet ? '50px' : '56px',
-    heroSubSize: isMobile ? '15px' : '18px',
+    // Fluid between the breakpoints so the 320-430 and 720-1080 ranges scale
+    // continuously instead of stepping. The clamp bounds are the sizes the design
+    // already used at the small and large ends.
+    heroTitleSize: 'clamp(30px, 6.6vw, 56px)',
+    heroSubSize: 'clamp(14.5px, 1.35vw, 18px)',
+    pageTitleSize: 'clamp(26px, 3.6vw, 34px)',
+    sectionTitleSize: 'clamp(21px, 2.2vw, 26px)',
     heroFormDir: isMobile ? 'column' : 'row',
     heroSplitDir: isMobile || isTablet ? 'column' : 'row',
     heroSplitGap: isMobile ? '40px' : '56px',

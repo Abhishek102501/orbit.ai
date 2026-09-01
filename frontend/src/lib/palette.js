@@ -43,6 +43,7 @@ export const DARK = {
   badgeText: '#f5f4ff',
   pros: '#a8e0b8',
   cons: '#e0a8a8',
+  star: '#f5b93f',
   hoverRing: '#5d5294',
   shadowCard: '0 16px 34px rgba(0,0,0,0.4)',
   shadowMd: '0 24px 60px rgba(0,0,0,0.4)',
@@ -92,6 +93,8 @@ export const LIGHT = {
   badgeText: '#f5f4ff',
   pros: '#2e7d52',
   cons: '#b0453f',
+  // A lighter gold washes out on the near-white ground; this clears 4.5:1 on it.
+  star: '#b8790a',
   hoverRing: '#c3b9ee',
   // Shadows are tinted with the ink colour rather than pure black: black shadows go
   // grey and muddy over a light ground.

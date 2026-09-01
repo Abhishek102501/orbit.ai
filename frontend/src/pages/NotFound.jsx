@@ -1,7 +1,7 @@
 import { useOrbit } from '../store/OrbitProvider.jsx';
 
 export function NotFound() {
-  const { c } = useOrbit();
+  const { c, layout } = useOrbit();
 
   return (
     <section
@@ -34,7 +34,7 @@ export function NotFound() {
         />
       </div>
 
-      <h1 style={{ fontSize: 26, margin: '0 0 10px' }}>This orbit doesn&apos;t exist</h1>
+      <h1 style={{ fontSize: layout.sectionTitleSize, margin: '0 0 10px' }}>This orbit doesn&apos;t exist</h1>
       <p style={{ color: c.ink(0.6), fontSize: 14, margin: '0 0 26px' }}>
         The page you&apos;re looking for has drifted out of range. Let&apos;s get you back on course.
       </p>

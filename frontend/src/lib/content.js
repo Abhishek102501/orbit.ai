@@ -118,3 +118,29 @@ export const FOOTER_BLURB =
   'Orbit.ai helps you discover, explore, and compare AI tools for work, creativity, productivity, and more.';
 
 export const FOOTER_SIGNOFF = 'Made for discovering what’s next.';
+
+/* ---------------------------------------------------------------------------
+   Social proof
+--------------------------------------------------------------------------- */
+
+/**
+ * The trust badge shown with the Find My AI Tool panel.
+ *
+ * The headline figure and rating are marketing copy, not values computed from the
+ * catalog — edit them here when the real numbers exist. The portraits are royalty-free
+ * Unsplash photography standing in for customer avatars, so their alt text describes the
+ * photograph rather than claiming a named person.
+ */
+export const SOCIAL_PROOF = {
+  headline: 'Loved by 10,000+ users',
+  rating: '4.9/5',
+  ratingValue: 4.9,
+  ratingMax: 5,
+  avatars: [
+    { photo: '1494790108377-be9c29b29330', alt: 'Portrait of a smiling woman' },
+    { photo: '1507003211169-0a1dd7228f2d', alt: 'Portrait of a smiling man' },
+    { photo: '1517841905240-472988babdf9', alt: 'Portrait of a woman wearing glasses' },
+    { photo: '1531427186611-ecfd6d936c79', alt: 'Portrait of a man in a green shirt' },
+    { photo: '1554151228-14d9def656e4', alt: 'Portrait of a laughing woman' },
+  ],
+};

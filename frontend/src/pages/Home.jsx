@@ -2,10 +2,13 @@ import { useMemo } from 'react';
 import Icon from '../components/Icon.jsx';
 import Hoverable from '../components/Hoverable.jsx';
 import AutoVideo from '../components/AutoVideo.jsx';
+import PhotoBackdrop from '../components/PhotoBackdrop.jsx';
+import SocialProof from '../components/SocialProof.jsx';
 import ToolCard from '../components/ToolCard.jsx';
 import { MarqueeCategoryCard } from '../components/CategoryCard.jsx';
 import { useReveal } from '../hooks/useReveal.js';
 import { useOrbit } from '../store/OrbitProvider.jsx';
+import { PRODUCT_STILL_PHOTO } from '../data/categories.js';
 import {
   EXAMPLE_PROMPTS,
   HOW_STEPS,
@@ -15,6 +18,7 @@ import {
 } from '../lib/content.js';
 
 function SectionHeading({ title, action }) {
+  const { layout } = useOrbit();
   return (
     <div
       style={{
@@ -24,7 +28,7 @@ function SectionHeading({ title, action }) {
         marginBottom: 20,
       }}
     >
-      <h2 style={{ fontSize: 26, margin: 0 }}>{title}</h2>
+      <h2 style={{ fontSize: layout.sectionTitleSize, margin: 0 }}>{title}</h2>
       {action}
     </div>
   );
@@ -75,25 +79,24 @@ export function Home() {
     go('#/advisor');
   };
 
-  /** Stand-in shown only if the hero .mp4 is missing or fails to decode. */
-  const previewPanel = (
-    <div
-      style={{
-        width: '100%',
-        height: layout.heroVideoHeight,
-        background: c.preview,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: c.ink(0.6),
-        fontSize: 12,
-        letterSpacing: '0.08em',
-        textTransform: 'uppercase',
-      }}
-    >
-      Product preview
+  /**
+   * Stand-in shown only if a product .mp4 is missing or fails to decode. A real
+   * photograph rather than a flat gradient, so a missing video degrades to something
+   * that still looks like part of the product.
+   */
+  const productStill = (height) => (
+    <div style={{ position: 'relative', width: '100%', height, overflow: 'hidden' }}>
+      <PhotoBackdrop
+        photo={PRODUCT_STILL_PHOTO}
+        alt="A code editor open on a dark screen"
+        width={900}
+        vivid
+      />
+      <div aria-hidden="true" style={{ position: 'absolute', inset: 0, boxShadow: c.vignette }} />
     </div>
   );
+
+  const previewPanel = productStill(layout.heroVideoHeight);
 
   const section = (reveal) => ({
     maxWidth: 1160,
@@ -127,27 +130,6 @@ export function Home() {
               textAlign: layout.heroTextAlign,
             }}
           >
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                fontSize: 11,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: c.accentText,
-                border: `1px solid ${c.accentBorder}`,
-                background: c.accentSoft,
-                padding: '6px 14px',
-                borderRadius: 20,
-                marginBottom: 24,
-                animation: 'fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.04s both',
-              }}
-            >
-              <Icon name="sparkle" size={13} />
-              Your AI discovery platform
-            </div>
-
             <h1
               style={{
                 fontFamily: 'Inter',
@@ -301,7 +283,7 @@ export function Home() {
             }}
           />
           <div style={{ position: 'relative' }}>
-            <h2 style={{ fontSize: 26, margin: '0 0 8px' }}>Find My AI Tool</h2>
+            <h2 style={{ fontSize: layout.sectionTitleSize, margin: '0 0 8px' }}>Find My AI Tool</h2>
             <p style={{ fontSize: 14, color: c.ink(0.6), margin: '0 0 22px' }}>
               What are you trying to accomplish?
             </p>
@@ -404,6 +386,17 @@ export function Home() {
                 </button>
               ))}
             </div>
+
+            {/* Social proof sits with the primary action rather than in the hero, which
+                is deliberately text + video only. */}
+            <SocialProof
+              ring={c.surface}
+              style={{
+                marginTop: 22,
+                paddingTop: 20,
+                borderTop: `1px solid ${c.ink(0.1)}`,
+              }}
+            />
           </div>
         </div>
       </section>
@@ -525,7 +518,7 @@ export function Home() {
           <Icon name="sparkle" size={13} />
           Product
         </div>
-        <h2 style={{ fontSize: 28, margin: '0 0 10px' }}>See Orbit in motion</h2>
+        <h2 style={{ fontSize: layout.sectionTitleSize, margin: '0 0 10px' }}>See Orbit in motion</h2>
         <p
           style={{
             color: c.ink(0.6),
@@ -552,22 +545,7 @@ export function Home() {
             src={SHOWCASE_VIDEO}
             style={{ display: 'block', width: '100%', height: 'auto', maxHeight: 520, objectFit: 'cover' }}
             fallback={
-              <div
-                style={{
-                  width: '100%',
-                  height: 420,
-                  background: c.preview,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: c.ink(0.6),
-                  fontSize: 12,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                Product preview
-              </div>
+              productStill(420)
             }
           />
           <div
@@ -583,7 +561,7 @@ export function Home() {
 
       {/* ----------------------------------------------------- how it works */}
       <section ref={howReveal.ref} style={section(howReveal)}>
-        <h2 style={{ fontSize: 26, margin: '0 0 8px', textAlign: 'center' }}>How Orbit Works</h2>
+        <h2 style={{ fontSize: layout.sectionTitleSize, margin: '0 0 8px', textAlign: 'center' }}>How Orbit Works</h2>
         <p
           style={{
             textAlign: 'center',
@@ -634,7 +612,7 @@ export function Home() {
 
       {/* ---------------------------------------------------------- why orbit */}
       <section ref={whyReveal.ref} style={section(whyReveal)}>
-        <h2 style={{ fontSize: 26, margin: '0 0 20px', textAlign: 'center' }}>Why Orbit</h2>
+        <h2 style={{ fontSize: layout.sectionTitleSize, margin: '0 0 20px', textAlign: 'center' }}>Why Orbit</h2>
         <div style={{ display: 'grid', gridTemplateColumns: `repeat(${layout.howGridCols},1fr)`, gap: 16 }}>
           {WHY_POINTS.map((w) => (
             <div
@@ -672,7 +650,7 @@ export function Home() {
             padding: layout.ctaPad,
           }}
         >
-          <h2 style={{ fontSize: 28, margin: '0 0 12px' }}>Stop guessing. Start matching.</h2>
+          <h2 style={{ fontSize: layout.sectionTitleSize, margin: '0 0 12px' }}>Stop guessing. Start matching.</h2>
           <p
             style={{
               color: c.ink(0.68),

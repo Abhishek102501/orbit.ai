@@ -168,3 +168,66 @@ li {
   transform: scale(1.05);
   filter: brightness(1.06) saturate(1.04);
 }
+
+/* ---- safe areas ---------------------------------------------------------
+   `viewport-fit=cover` lets the page use the full screen on notched phones, so
+   the page has to keep its own content out of the unsafe edges. Padding the
+   body covers everything in normal flow; the mobile drawer is fixed to the
+   viewport and insets itself. */
+@supports (padding: env(safe-area-inset-left)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* ---- touch targets ------------------------------------------------------
+   Applied on coarse pointers only, so the desktop sizing is untouched. These
+   are min-* constraints, which raise an element that is smaller without
+   overriding one that is already comfortable. */
+@media (pointer: coarse) {
+  /* `!important` because several controls set a smaller `min-height` inline, which
+     would otherwise win over a stylesheet rule. This is a floor, never a fixed size:
+     anything already larger keeps its own height. */
+  button,
+  select,
+  textarea,
+  input:not([type='checkbox']):not([type='radio']),
+  [role='button'] {
+    min-height: 44px !important;
+  }
+
+  /* Icon-only controls stay square rather than becoming tall rectangles. */
+  #themeToggle,
+  .nav-menu-btn,
+  .mobile-nav-close,
+  .video-sound-btn {
+    min-width: 44px;
+  }
+
+  /* Inline text links get a taller hit area without moving anything: the extra
+     padding is absorbed by the line box in these lists. */
+  header > a,
+  header nav a,
+  footer a,
+  footer nav a,
+  .back-link {
+    padding-block: 8px;
+  }
+}
+
+/* ---- social proof avatars ---------------------------------------------
+   A small lift on hover, and the hovered face comes forward so it is not
+   clipped by the one overlapping it. Neutralised by the reduced-motion rule
+   at the top of this file. */
+.sp-avatar {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sp-avatar:hover {
+  transform: translateY(-2px) scale(1.06);
+}
+
+span:has(> .sp-avatar:hover) {
+  z-index: 6 !important;
+}

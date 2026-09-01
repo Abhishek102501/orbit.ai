@@ -35,6 +35,9 @@ export function ToolLogo({ initials, logoUrl, size = 42, radius = 10, fontSize =
         <img
           src={logoUrl}
           onError={() => setFailed(true)}
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
           style={{
             position: 'absolute',
             inset: 0,

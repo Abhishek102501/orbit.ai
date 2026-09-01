@@ -10,7 +10,8 @@ export function initials(name) {
 /** Tool logos are pulled from the site's own favicon, as in the design. */
 export function faviconUrl(website) {
   try {
-    return 'https://www.google.com/s2/favicons?sz=128&domain=' + new URL(website).hostname;
+    // 256 so the mark stays sharp on the 64px detail-page avatar at 2x.
+    return 'https://www.google.com/s2/favicons?sz=256&domain=' + new URL(website).hostname;
   } catch (e) {
     return '';
   }

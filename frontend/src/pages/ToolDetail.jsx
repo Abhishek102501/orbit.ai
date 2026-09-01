@@ -41,7 +41,7 @@ export function ToolDetail() {
         animation: 'fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both',
       }}
     >
-      <a
+      <a className="back-link"
         href="#/discover"
         style={{
           textDecoration: 'none',
@@ -50,7 +50,8 @@ export function ToolDetail() {
           display: 'inline-flex',
           alignItems: 'center',
           gap: 5,
-          marginBottom: 20,
+          padding: '6px 0',
+          marginBottom: 14,
         }}
       >
         <Icon name="arrowLeft" size={13} />
@@ -99,7 +100,7 @@ export function ToolDetail() {
               marginBottom: 6,
             }}
           >
-            <h1 style={{ fontSize: 28, margin: 0 }}>{card.name}</h1>
+            <h1 style={{ fontSize: layout.pageTitleSize, margin: 0 }}>{card.name}</h1>
             <span
               style={{
                 fontSize: 11,
@@ -145,7 +146,8 @@ export function ToolDetail() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 10, flex: 'none' }}>
+        {/* wraps rather than clipping once the three actions no longer fit on one line */}
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', flex: '0 1 auto' }}>
           <button
             type="button"
             onClick={card.onToggleSave}

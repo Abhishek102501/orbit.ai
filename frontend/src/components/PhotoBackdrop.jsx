@@ -39,7 +39,22 @@ export function PhotoBackdrop({
     setId(FALLBACK_PHOTO);
   };
 
-  if (hidden) return null;
+  // Both the photo and the shared fallback failed — network offline, an ad blocker, a
+  // dead id. Paint the brand gradient rather than collapsing to an empty container or
+  // leaving a broken-image glyph behind.
+  if (hidden) {
+    return (
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: c.preview,
+          ...style,
+        }}
+      />
+    );
+  }
 
   const treatment = vivid
     ? { mixBlendMode: 'normal', opacity: 1 }

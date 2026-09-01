@@ -102,7 +102,7 @@ export function Discover() {
             padding: '0 28px',
           }}
         >
-          <h1 style={{ fontSize: 32, margin: '0 0 8px' }}>Discover AI Tools</h1>
+          <h1 style={{ fontSize: layout.pageTitleSize, margin: '0 0 8px' }}>Discover AI Tools</h1>
           <p style={{ color: c.ink(0.65), fontSize: 14, margin: 0 }}>
             Search, filter, and browse the full Orbit catalog.
           </p>
