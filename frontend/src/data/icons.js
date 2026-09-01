@@ -64,6 +64,11 @@ export const ICONS = {
 
   // Social marks. Kept to shapes that are simple enough to verify by eye at render size;
   // each is rendered by <Icon> on currentColor like every other icon here.
+  mail: { els: [{ t: 'rect', x: 2.5, y: 5, width: 19, height: 14, rx: 2.5 },
+    { t: 'polyline', points: '3.2,6.6 12,13 20.8,6.6' }] },
+  user: { els: [{ t: 'circle', cx: 12, cy: 8.2, r: 3.8 },
+    { t: 'path', d: 'M4.6 20a7.4 7.4 0 0 1 14.8 0' }] },
+
   brandX: { els: [{ t: 'line', x1: 4, y1: 4, x2: 20, y2: 20 }, { t: 'line', x1: 20, y1: 4, x2: 4, y2: 20 }] },
   brandGithub: { fill: true, els: [{ t: 'path', d: 'M12 2A10 10 0 0 0 8.84 21.5c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.03a9.5 9.5 0 0 1 5 0c1.91-1.3 2.75-1.03 2.75-1.03.55 1.37.2 2.39.1 2.64.64.7 1.03 1.6 1.03 2.69 0 3.85-2.34 4.7-4.57 4.95.36.31.68.92.68 1.85l-.01 2.75c0 .26.18.58.69.48A10 10 0 0 0 12 2Z' }] },
   brandLinkedin: { els: [{ t: 'rect', x: 3, y: 3, width: 18, height: 18, rx: 3 },

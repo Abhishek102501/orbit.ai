@@ -3,14 +3,14 @@ import Icon from '../components/Icon.jsx';
 import Hoverable from '../components/Hoverable.jsx';
 import AutoVideo from '../components/AutoVideo.jsx';
 import PhotoBackdrop from '../components/PhotoBackdrop.jsx';
-import SocialProof from '../components/SocialProof.jsx';
+import ToolFinder from '../components/ToolFinder.jsx';
+import SuggestTool from '../components/SuggestTool.jsx';
 import ToolCard from '../components/ToolCard.jsx';
 import { MarqueeCategoryCard } from '../components/CategoryCard.jsx';
 import { useReveal } from '../hooks/useReveal.js';
 import { useOrbit } from '../store/OrbitProvider.jsx';
 import { PRODUCT_STILL_PHOTO } from '../data/categories.js';
 import {
-  EXAMPLE_PROMPTS,
   HOW_STEPS,
   WHY_POINTS,
   HERO_VIDEO,
@@ -38,10 +38,6 @@ export function Home() {
   const {
     c,
     layout,
-    heroQuery,
-    setHeroQuery,
-    setAdvisorText,
-    go,
     TOOLS,
     CATEGORIES,
     countByCategory,
@@ -72,12 +68,6 @@ export function Home() {
         .map(buildCard),
     [TOOLS, buildCard],
   );
-
-  const onHeroSubmit = (e) => {
-    e.preventDefault();
-    setAdvisorText(heroQuery);
-    go('#/advisor');
-  };
 
   /**
    * Stand-in shown only if a product .mp4 is missing or fails to decode. A real
@@ -193,7 +183,7 @@ export function Home() {
                 position: 'absolute',
                 inset: '8% 6%',
                 borderRadius: '50%',
-                background: 'radial-gradient(closest-side, rgba(145,132,217,0.22), transparent 70%)',
+                background: `radial-gradient(closest-side, ${c.accentGlow}, transparent 70%)`,
                 filter: 'blur(40px)',
                 pointerEvents: 'none',
                 animation: 'floatGlow 11s ease-in-out infinite',
@@ -204,14 +194,14 @@ export function Home() {
                 position: 'relative',
                 borderRadius: 18,
                 overflow: 'hidden',
-                border: '1px solid rgba(145,132,217,0.22)',
+                border: `1px solid ${c.accentBorder}`,
                 boxShadow: `0 0 0 1px ${c.ring}, ${c.shadowLg}`,
                 transition:
                   'transform 0.6s cubic-bezier(0.16,1,0.3,1), box-shadow 0.6s cubic-bezier(0.16,1,0.3,1)',
               }}
               hoverStyle={{
                 transform: 'translateY(-4px)',
-                boxShadow: `0 0 0 1px ${c.hoverRing}, ${c.shadowLg}, 0 0 60px rgba(145,132,217,0.16)`,
+                boxShadow: `0 0 0 1px ${c.hoverRing}, ${c.shadowLg}, 0 0 60px ${c.accentGlow}`,
               }}
             >
               <div
@@ -278,125 +268,12 @@ export function Home() {
               inset: 0,
               borderRadius: 18,
               background:
-                'radial-gradient(120% 140% at 50% -20%, rgba(145,132,217,0.12), transparent 60%)',
+                `radial-gradient(120% 140% at 50% -20%, ${c.accentSoft}, transparent 60%)`,
               pointerEvents: 'none',
             }}
           />
           <div style={{ position: 'relative' }}>
-            <h2 style={{ fontSize: layout.sectionTitleSize, margin: '0 0 8px' }}>Find My AI Tool</h2>
-            <p style={{ fontSize: 14, color: c.ink(0.6), margin: '0 0 22px' }}>
-              What are you trying to accomplish?
-            </p>
-
-            <form
-              onSubmit={onHeroSubmit}
-              style={{
-                display: 'flex',
-                flexDirection: layout.heroFormDir,
-                gap: 10,
-                background: c.ink(0.03),
-                border: `1px solid ${c.ink(0.14)}`,
-                borderRadius: 14,
-                padding: 8,
-              }}
-            >
-              <input
-                value={heroQuery}
-                onChange={(e) => setHeroQuery(e.target.value)}
-                placeholder="Describe your goal..."
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  minHeight: 48,
-                  padding: '0 16px',
-                  fontSize: 15,
-                  background: 'transparent',
-                  border: 'none',
-                  color: c.text,
-                  outline: 'none',
-                  fontFamily: 'Inter',
-                }}
-              />
-              <button
-                type="submit"
-                id="heroSendBtn"
-                style={{
-                  minHeight: 48,
-                  padding: '0 22px 0 26px',
-                  background: c.accent,
-                  border: `1px solid ${c.accent}`,
-                  borderRadius: 10,
-                  color: c.onAccent,
-                  fontWeight: 600,
-                  fontSize: 14,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  overflow: 'hidden',
-                  transition: 'box-shadow 0.25s ease',
-                }}
-              >
-                <span className="send-icon-wrap" style={{ display: 'flex' }}>
-                  <svg
-                    className="send-icon"
-                    viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
-                    style={{
-                      display: 'block',
-                      transformOrigin: 'center center',
-                      transition: 'transform 0.3s ease-in-out',
-                    }}
-                  >
-                    <path fill="none" d="M0 0h24v24H0z" />
-                    <path
-                      fill="currentColor"
-                      d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
-                    />
-                  </svg>
-                </span>
-                <span
-                  className="send-label"
-                  style={{ display: 'block', marginLeft: 8, transition: 'transform 0.3s ease-in-out' }}
-                >
-                  Find My AI Tool
-                </span>
-              </button>
-            </form>
-
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
-              {EXAMPLE_PROMPTS.map((text) => (
-                <button
-                  key={text}
-                  type="button"
-                  onClick={() => setHeroQuery(text)}
-                  style={{
-                    fontSize: '12.5px',
-                    padding: '8px 14px',
-                    borderRadius: 20,
-                    border: `1px solid ${c.ink(0.14)}`,
-                    background: c.ink(0.02),
-                    color: c.ink(0.75),
-                    cursor: 'pointer',
-                  }}
-                >
-                  {text}
-                </button>
-              ))}
-            </div>
-
-            {/* Social proof sits with the primary action rather than in the hero, which
-                is deliberately text + video only. */}
-            <SocialProof
-              ring={c.surface}
-              style={{
-                marginTop: 22,
-                paddingTop: 20,
-                borderTop: `1px solid ${c.ink(0.1)}`,
-              }}
-            />
+            <ToolFinder />
           </div>
         </div>
       </section>
@@ -681,6 +558,9 @@ export function Home() {
           </a>
         </div>
       </section>
+
+      {/* -------------------------------------------------- suggest a tool */}
+      <SuggestTool />
     </>
   );
 }

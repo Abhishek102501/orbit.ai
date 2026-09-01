@@ -45,7 +45,7 @@ export function Splash() {
       </div>
 
       <div style={{ animation: 'fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.15s both' }}>
-        <BrandLogo src={logoSrc} height={26} glow={c.logoGlow} color={c.text} markColor={c.accentText} />
+        <BrandLogo src={logoSrc} height={26} glow={c.logoGlow} color={c.text} markColor={c.accentText} accentColor={c.accent} />
       </div>
 
       <div

@@ -312,6 +312,19 @@ export function OrbitProvider({ children }) {
     }, 700);
   }, [advisorText, advisorBudget, advisorSkill, advisorTask, engine]);
 
+  /**
+   * One-shot recommendation for the home-page finder. Runs the same engine the Advisor
+   * page uses but returns the results instead of writing them into the advisor session,
+   * so the two surfaces never fight over the same state.
+   */
+  const quickMatch = useCallback(
+    (text, limit = 3) => {
+      if (!engine || !text || !text.trim()) return [];
+      return engine.recommend(text, {}, limit).results;
+    },
+    [engine],
+  );
+
   const resetAdvisor = useCallback(() => {
     setAdvisorResult(null);
     setAdvisorText('');
@@ -398,6 +411,7 @@ export function OrbitProvider({ children }) {
     advisorLoading,
     runAdvisor,
     resetAdvisor,
+    quickMatch,
 
     compareSearch,
     setCompareSearch,

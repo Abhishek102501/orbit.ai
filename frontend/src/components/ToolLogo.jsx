@@ -44,7 +44,7 @@ export function ToolLogo({ initials, logoUrl, size = 42, radius = 10, fontSize =
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            background: '#f3f5fe',
+            background: '#eef1f2',
           }}
           alt=""
         />

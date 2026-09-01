@@ -10,7 +10,7 @@ import { useState } from 'react';
  *
  * See README.md → "Brand assets".
  */
-export function BrandLogo({ src, height = 30, glow = '0 0 10px rgba(145,132,217,0.35)', color, markColor }) {
+export function BrandLogo({ src, height = 30, glow = '0 0 10px rgba(105,129,141,0.35)', color, markColor, accentColor }) {
   const [failed, setFailed] = useState(false);
 
   if (!failed) {
@@ -24,7 +24,15 @@ export function BrandLogo({ src, height = 30, glow = '0 0 10px rgba(145,132,217,
     );
   }
 
-  return <BrandLogoFallback height={height} glow={glow} color={color} markColor={markColor} />;
+  return (
+    <BrandLogoFallback
+      height={height}
+      glow={glow}
+      color={color}
+      markColor={markColor}
+      accentColor={accentColor}
+    />
+  );
 }
 
 /**
@@ -36,9 +44,10 @@ export function BrandLogo({ src, height = 30, glow = '0 0 10px rgba(145,132,217,
  */
 export function BrandLogoFallback({
   height = 30,
-  glow = '0 0 10px rgba(145,132,217,0.35)',
-  color = '#e9e9ed',
-  markColor = '#b5abfc',
+  glow = '0 0 10px rgba(105,129,141,0.35)',
+  color = '#afb3b7',
+  markColor = '#c9d3d8',
+  accentColor = '#69818d',
 }) {
   return (
     <svg
@@ -55,7 +64,7 @@ export function BrandLogoFallback({
         rx="14.5"
         ry="7"
         fill="none"
-        stroke="#9184d9"
+        stroke={accentColor}
         strokeWidth="1.6"
         transform="rotate(-28 16 16)"
       />
@@ -70,7 +79,7 @@ export function BrandLogoFallback({
         fill={color}
       >
         Orbit
-        <tspan fill="#9184d9">.ai</tspan>
+        <tspan fill={accentColor}>.ai</tspan>
       </text>
     </svg>
   );
@@ -89,7 +98,7 @@ export function BrandMark({ height = 48 }) {
         style={{
           height,
           width: 'auto',
-          filter: 'drop-shadow(0 0 16px rgba(145,132,217,0.5))',
+          filter: 'drop-shadow(0 0 16px rgba(105,129,141,0.5))',
           animation: 'splashPulse 1.6s ease-in-out infinite',
         }}
       />
@@ -104,7 +113,7 @@ export function BrandMark({ height = 48 }) {
       aria-hidden="true"
       style={{
         display: 'block',
-        filter: 'drop-shadow(0 0 16px rgba(145,132,217,0.5))',
+        filter: 'drop-shadow(0 0 16px rgba(105,129,141,0.5))',
         animation: 'splashPulse 1.6s ease-in-out infinite',
       }}
     >
@@ -114,11 +123,11 @@ export function BrandMark({ height = 48 }) {
         rx="14.5"
         ry="7"
         fill="none"
-        stroke="#9184d9"
+        stroke="#69818d"
         strokeWidth="1.8"
         transform="rotate(-28 16 16)"
       />
-      <circle cx="16" cy="16" r="5.6" fill="#b5abfc" />
+      <circle cx="16" cy="16" r="5.6" fill="#c9d3d8" />
     </svg>
   );
 }

@@ -91,7 +91,7 @@ function LinkColumn({ title, links, columns = 1, style }) {
  * the brand rather than a stray mark near the section rules.
  */
 function BrandGlow() {
-  const { isLight } = useOrbit();
+  const { c, isLight } = useOrbit();
   return (
     <div
       aria-hidden="true"
@@ -102,7 +102,7 @@ function BrandGlow() {
         width: 240,
         height: 160,
         pointerEvents: 'none',
-        background: 'radial-gradient(closest-side, rgba(145,132,217,0.22), transparent 72%)',
+        background: `radial-gradient(closest-side, ${c.accentGlow}, transparent 72%)`,
         filter: 'blur(28px)',
         opacity: isLight ? 0.7 : 1,
         animation: 'floatGlow 18s ease-in-out infinite',

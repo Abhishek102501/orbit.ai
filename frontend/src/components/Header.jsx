@@ -46,7 +46,7 @@ export function Header() {
           marginRight: 'auto',
         }}
       >
-        <BrandLogo src={logoSrc} height={30} glow={c.logoGlow} color={c.text} markColor={c.accentText} />
+        <BrandLogo src={logoSrc} height={30} glow={c.logoGlow} color={c.text} markColor={c.accentText} accentColor={c.accent} />
       </a>
 
       <Hoverable

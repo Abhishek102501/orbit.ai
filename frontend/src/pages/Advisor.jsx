@@ -105,8 +105,8 @@ export function Advisor() {
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
             color: c.accentText,
-            border: '1px solid rgba(145,132,217,0.35)',
-            background: 'rgba(145,132,217,0.08)',
+            border: `1px solid ${c.accentBorder}`,
+            background: c.accentSoft,
             padding: '6px 14px',
             borderRadius: 20,
             marginBottom: 18,
@@ -281,7 +281,7 @@ export function Advisor() {
               width: 34,
               height: 34,
               borderRadius: '50%',
-              border: '2px solid rgba(145,132,217,0.25)',
+              border: `2px solid ${c.accentBorder}`,
               borderTopColor: c.accent,
               animation: 'orbitSpin 0.8s linear infinite',
             }}
@@ -354,7 +354,7 @@ export function Advisor() {
                 size={56}
                 radius={14}
                 fontSize={18}
-                style={{ background: 'rgba(145,132,217,0.18)' }}
+                style={{ background: c.accentSoftStrong }}
               />
 
               <div style={{ flex: 1, minWidth: 200 }}>
@@ -494,7 +494,7 @@ export function Advisor() {
                   size={38}
                   radius={10}
                   fontSize={13}
-                  style={{ background: 'rgba(145,132,217,0.12)' }}
+                  style={{ background: c.accentSoft }}
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: '14.5px', fontWeight: 500 }}>{a.name}</div>

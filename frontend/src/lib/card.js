@@ -30,7 +30,7 @@ export function buildCard(tool, ctx) {
     saveColor: isSaved ? c.accentText : c.text,
     compareLabel: isComparing ? 'In Compare' : 'Compare',
     compareBorder: isComparing ? c.accent : c.ink(0.16),
-    compareBg: isComparing ? 'rgba(145,132,217,0.12)' : 'transparent',
+    compareBg: isComparing ? c.accentSoft : 'transparent',
     compareColor: isComparing ? c.accentText : c.text,
     saveLabel: isSaved ? 'Saved' : 'Save',
   };

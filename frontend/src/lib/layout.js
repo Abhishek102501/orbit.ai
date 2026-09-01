@@ -62,6 +62,9 @@ export function layoutFor(vw) {
     finderPadTop: isMobile ? '56px' : '110px',
     finderPadBottom: isMobile ? '64px' : '104px',
     finderPad: isMobile ? '26px 20px' : '40px 44px',
+    finderTitleSize: 'clamp(22px, 2.9vw, 32px)',
+    // The Suggest section runs copy beside the three-step flow; they stack below tablet.
+    suggestDir: isMobile || isTablet ? 'column' : 'row',
 
     // sections
     ctaPad: isMobile ? '32px 22px' : '52px',

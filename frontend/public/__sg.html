@@ -1,0 +1,75 @@
+<!doctype html>
+<html><body style="margin:0;background:#777">
+<pre id="log" style="font:11px monospace;background:#fff;color:#000;margin:0;padding:4px;white-space:pre-wrap"></pre>
+<iframe id="f" style="border:0;display:block"></iframe>
+<script>
+  var q = new URLSearchParams(location.search);
+  localStorage.setItem('orbit_theme', q.get('theme') || 'dark');
+  var f = document.getElementById('f');
+  f.style.width = (q.get('w') || '1340') + 'px';
+  f.style.height = (q.get('h') || '1000') + 'px';
+  f.src = '/#/';
+  var errs = [];
+  function setVal(w, el, v) {
+    var proto = el.tagName === 'TEXTAREA' ? w.HTMLTextAreaElement : (el.tagName === 'SELECT' ? w.HTMLSelectElement : w.HTMLInputElement);
+    Object.getOwnPropertyDescriptor(proto.prototype, 'value').set.call(el, v);
+    el.dispatchEvent(new w.Event(el.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
+  }
+  setTimeout(function () {
+   try {
+    var d = f.contentDocument, w = f.contentWindow;
+    var t = d.getElementById('catMarqueeTrack'); if (t) t.style.animation = 'none';
+    w.addEventListener('error', function (e) { errs.push(e.message); });
+    if (q.get('noanim') === '1') { var st = d.createElement('style'); st.textContent = '*{animation:none !important;transition:none !important;opacity:1 !important;transform:none !important}'; d.head.appendChild(st); }
+
+    var act = q.get('act') || '';
+    function trigger() {
+      return [].slice.call(d.querySelectorAll('button')).filter(function (b) { return /Suggest an AI Tool/.test(b.textContent); })[0];
+    }
+    if (act.indexOf('open') === 0) { var b = trigger(); if (b) b.click(); }
+
+    setTimeout(function () {
+      var dlg = d.querySelector('[role="dialog"]');
+      if (act === 'open-invalid' && dlg) {
+        setVal(w, d.getElementById('suggest-toolName'), 'Perplexity');
+        setVal(w, d.getElementById('suggest-websiteUrl'), 'javascript:alert(1)');
+        setVal(w, d.getElementById('suggest-category'), 'research');
+        setVal(w, d.getElementById('suggest-description'), 'An answer engine with inline citations.');
+        dlg.querySelector('form').dispatchEvent(new w.Event('submit', { bubbles: true, cancelable: true }));
+      }
+      if (act === 'open-submit' && dlg) {
+        setVal(w, d.getElementById('suggest-toolName'), 'Perplexity');
+        setVal(w, d.getElementById('suggest-websiteUrl'), 'perplexity.ai');
+        setVal(w, d.getElementById('suggest-category'), 'research');
+        setVal(w, d.getElementById('suggest-description'), 'An answer engine with inline citations for research.');
+        dlg.querySelector('form').dispatchEvent(new w.Event('submit', { bubbles: true, cancelable: true }));
+      }
+      if (act === 'open-esc' && dlg) {
+        dlg.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      }
+      if (act === 'open-backdrop' && dlg) {
+        dlg.parentElement.dispatchEvent(new w.MouseEvent('mousedown', { bubbles: true }));
+      }
+
+      setTimeout(function () {
+        var dlg2 = d.querySelector('[role="dialog"]');
+        var submit = dlg2 && [].slice.call(dlg2.querySelectorAll('button')).filter(function (b) { return /Submit|Done/.test(b.textContent); })[0];
+        var queued = [];
+        try { queued = JSON.parse(w.localStorage.getItem('orbit_suggestions') || '[]'); } catch (e) {}
+        var errNodes = dlg2 ? dlg2.querySelectorAll('[id$="-error"]') : [];
+        document.getElementById('log').textContent =
+          'theme=' + localStorage.getItem('orbit_theme') + ' w=' + f.style.width + ' act=' + (act || 'none') +
+          ' | dialog=' + (dlg2 ? 'OPEN' : 'closed') +
+          ' portalToBody=' + (dlg2 ? (dlg2.closest('body') === d.body && !dlg2.closest('section')) : '-') +
+          ' bodyOverflow=' + w.getComputedStyle(d.body).overflow +
+          ' | submitBtn="' + (submit ? submit.textContent.trim() : '-') + '" disabled=' + (submit ? submit.disabled : '-') +
+          ' | fieldErrors=' + errNodes.length +
+          (errNodes.length ? ' [' + [].map.call(errNodes, function (n) { return n.textContent.trim(); }).join(' | ') + ']' : '') +
+          ' | queued=' + queued.length + (queued.length ? ' last=' + JSON.stringify(queued[queued.length - 1]).slice(0, 120) : '') +
+          ' | scrollW=' + d.documentElement.scrollWidth + '/' + w.innerWidth + ' errs=' + errs.length;
+      }, 900);
+    }, 700);
+   } catch (e) { document.getElementById('log').textContent = 'PROBE ERROR: ' + e.message; }
+  }, 3000);
+</script>
+</body></html>

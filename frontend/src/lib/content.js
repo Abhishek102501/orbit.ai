@@ -8,6 +8,20 @@ export const EXAMPLE_PROMPTS = [
   'Automate repetitive business tasks',
 ];
 
+/**
+ * Icon for each example prompt, so the suggestion row reads as intent rather than as a
+ * wall of pills. Keyed off EXAMPLE_PROMPTS so the copy stays in one place; anything
+ * without an entry falls back to the sparkle.
+ */
+export const PROMPT_ICONS = {
+  'Create a cinematic product video': 'video',
+  'Build a website without coding': 'code',
+  'Research a topic with citations': 'search',
+  'Create a professional presentation': 'layers',
+  'Generate images for social media': 'image',
+  'Automate repetitive business tasks': 'bolt',
+};
+
 export const HOW_STEPS = [
   {
     n: '01',
@@ -144,3 +158,10 @@ export const SOCIAL_PROOF = {
     { photo: '1554151228-14d9def656e4', alt: 'Portrait of a laughing woman' },
   ],
 };
+
+/** The three-step contribution flow shown beside the Suggest an AI Tool call to action. */
+export const SUGGEST_STEPS = [
+  { n: '01', title: 'Suggest', body: 'Share an AI tool you think belongs here.' },
+  { n: '02', title: 'We review', body: 'Our team checks the tool and the information.' },
+  { n: '03', title: 'We add', body: 'Approved tools join the Orbit directory.' },
+];
