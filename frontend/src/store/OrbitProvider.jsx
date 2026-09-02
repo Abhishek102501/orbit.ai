@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useViewport } from '../hooks/useViewport.js';
 import { useHashRoute } from '../hooks/useHashRoute.js';
 import { paletteFor } from '../lib/palette.js';
+import { BRAND_LOGO_DARK, BRAND_LOGO_LIGHT } from '../lib/content.js';
 import { layoutFor } from '../lib/layout.js';
 import * as catalog from '../data/categories.js';
 import {
@@ -141,10 +142,24 @@ export function OrbitProvider({ children }) {
     document.body.style.color = p.text;
 
     root.setAttribute('data-theme', theme);
+    // Native chrome — scrollbars, `<select>` popups, form controls — follows
+    // `color-scheme`, not our painted surfaces, so it has to be told the theme too.
+    root.style.colorScheme = theme === 'light' ? 'light' : 'dark';
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) themeColor.setAttribute('content', p.bg);
+
     root.style.setProperty('--orbit-link', p.accentText);
     root.style.setProperty('--orbit-link-hover', p.accent);
     root.style.setProperty('--orbit-focus', p.accent);
     root.style.setProperty('--orbit-selection', p.accentSoftStrong);
+    // The match hue, for the few places a stylesheet needs it (the mint gradient
+    // used to highlight a phrase inside a heading).
+    root.style.setProperty('--orbit-mint', p.signal);
+    root.style.setProperty('--orbit-mint-2', p.signalInk);
+    root.style.setProperty('--orbit-accent', p.accent);
+    root.style.setProperty('--orbit-step-hover', p.signalTrack);
+    // The ground the contribution rail's nodes punch the thread out against.
+    root.style.setProperty('--orbit-step-punch', p.bg);
   }, [theme]);
 
   useEffect(
@@ -353,7 +368,7 @@ export function OrbitProvider({ children }) {
     isLight,
     c,
     toggleTheme,
-    logoSrc: isLight ? '/assets/orbit-logo-full-light.png' : '/assets/orbit-logo-full.png',
+    logoSrc: isLight ? BRAND_LOGO_LIGHT : BRAND_LOGO_DARK,
 
     vw,
     layout,

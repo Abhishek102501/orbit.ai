@@ -1,12 +1,34 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import Icon from './Icon.jsx';
 import { useOrbit } from '../store/OrbitProvider.jsx';
-import { NAV_ACTIONS } from '../lib/content.js';
+import { NAV_CTA, NAV_ITEMS, NAV_UTILITY } from '../lib/content.js';
+
+const FOCUSABLE = 'a[href], button:not([disabled])';
 
 export function MobileNav() {
-  const { c, mobileNavOpen, toggleMobileNav, saved } = useOrbit();
+  const { c, mobileNavOpen, toggleMobileNav, saved, compareIds } = useOrbit();
   const closeRef = useRef(null);
+  const panelRef = useRef(null);
   const restoreFocusTo = useRef(null);
+
+  // Tab stays inside the drawer while it is open. Without this the drawer looks
+  // modal but the keyboard walks straight out into the page behind the scrim.
+  const onPanelKeyDown = useCallback((e) => {
+    if (e.key !== 'Tab' || !panelRef.current) return;
+    const items = Array.from(panelRef.current.querySelectorAll(FOCUSABLE)).filter(
+      (el) => el.offsetParent !== null,
+    );
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }, []);
 
   // While the drawer is open: hold the page still behind it, close on Escape, close if
   // the route changes some other way (browser back, a deep link), and park focus on the
@@ -57,10 +79,13 @@ export function MobileNav() {
         zIndex: 50,
         background: c.scrimOverlay,
         backdropFilter: 'blur(6px)',
+        overscrollBehavior: 'contain',
       }}
       onClick={toggleMobileNav}
     >
       <nav
+        ref={panelRef}
+        onKeyDown={onPanelKeyDown}
         aria-label="Site"
         style={{
           position: 'absolute',
@@ -77,6 +102,7 @@ export function MobileNav() {
           flexDirection: 'column',
           gap: 6,
           overflowY: 'auto',
+          overscrollBehavior: 'contain',
           borderLeft: `1px solid ${c.ink(0.12)}`,
         }}
         onClick={(e) => e.stopPropagation()}
@@ -106,62 +132,62 @@ export function MobileNav() {
           </button>
         </div>
 
-        <a href="#/discover" onClick={toggleMobileNav} style={link}>
-          Discover
-        </a>
-        <a
-          href="#/advisor"
-          onClick={toggleMobileNav}
-          style={{ ...link, color: c.accentText, display: 'flex', alignItems: 'center', gap: 8 }}
-        >
-          <Icon name="sparkle" size={13} />
-          AI Advisor
-        </a>
-        <a href="#/categories" onClick={toggleMobileNav} style={link}>
-          Categories
-        </a>
-        <a href="#/compare" onClick={toggleMobileNav} style={link}>
-          Compare
-        </a>
-        <a href="#/saved" onClick={toggleMobileNav} style={link}>
-          Saved{saved.length ? ' (' + saved.length + ')' : ''}
-        </a>
+        {/* Same three tiers as the desktop capsule, read from the same data, so the
+            two surfaces cannot drift apart. */}
+        {NAV_ITEMS.map((item) => (
+          <a key={item.href} href={item.href} onClick={toggleMobileNav} style={link}>
+            {item.label}
+          </a>
+        ))}
 
-        {/* Account actions mirror the desktop capsule. Inert until they are wired — see
-            NAV_ACTIONS in lib/content.js. */}
-        <div style={{ display: 'grid', gap: 10, marginTop: 20 }}>
-          <button
-            type="button"
+        {NAV_UTILITY.map((item) => {
+          const n = item.count === 'saved' ? saved.length : compareIds.length;
+          return (
+            <a
+              key={item.href}
+              href={item.href}
+              onClick={toggleMobileNav}
+              style={{ ...link, display: 'flex', alignItems: 'center', gap: 10 }}
+            >
+              <span aria-hidden="true" style={{ display: 'flex', color: c.ink(0.55) }}>
+                <Icon name={item.icon} size={15} />
+              </span>
+              {item.label}
+              {n ? (
+                <span
+                  className="num"
+                  style={{ marginLeft: 'auto', fontSize: 12, color: c.accent }}
+                >
+                  {n}
+                  <span className="sr-only"> items</span>
+                </span>
+              ) : null}
+            </a>
+          );
+        })}
+
+        <div style={{ display: 'grid', gap: 10, marginTop: 22 }}>
+          <a
+            href={NAV_CTA.href}
+            onClick={toggleMobileNav}
             style={{
-              minHeight: 44,
-              borderRadius: 999,
-              border: `1px solid ${c.ink(0.16)}`,
-              background: 'transparent',
-              color: c.text,
-              fontSize: 14,
-              fontFamily: 'Inter, system-ui, sans-serif',
-              fontWeight: 500,
-              cursor: 'pointer',
-            }}
-          >
-            {NAV_ACTIONS.signIn.label}
-          </button>
-          <button
-            type="button"
-            style={{
-              minHeight: 44,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              minHeight: 46,
               borderRadius: 999,
               border: `1px solid ${c.accent}`,
               background: c.accent,
               color: c.onAccent,
               fontSize: 14,
-              fontFamily: 'Inter, system-ui, sans-serif',
               fontWeight: 600,
-              cursor: 'pointer',
+              textDecoration: 'none',
             }}
           >
-            {NAV_ACTIONS.getStarted.label}
-          </button>
+            {NAV_CTA.label}
+            <Icon name="arrowRight" size={15} />
+          </a>
         </div>
       </nav>
     </div>

@@ -16,6 +16,7 @@ const FOCUSABLE =
  * instead of the viewport — the dialog would be trapped inside its section.
  */
 export function Modal({ open, onClose, title, description, labelId, children }) {
+  const describedId = description ? `${labelId}-description` : undefined;
   const { c, layout } = useOrbit();
   const panelRef = useRef(null);
   const returnFocusRef = useRef(null);
@@ -89,6 +90,8 @@ export function Modal({ open, onClose, title, description, labelId, children }) 
         background: c.scrimOverlay,
         backdropFilter: 'blur(6px)',
         WebkitBackdropFilter: 'blur(6px)',
+        // Scrolling inside the dialog must not chain through to the page behind it.
+        overscrollBehavior: 'contain',
         animation: 'fadeUp 0.2s ease both',
       }}
     >
@@ -97,12 +100,14 @@ export function Modal({ open, onClose, title, description, labelId, children }) 
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelId}
+        aria-describedby={describedId}
         style={{
           position: 'relative',
           width: '100%',
           maxWidth: 560,
           maxHeight: layout.isMobile ? '92vh' : '88vh',
           overflowY: 'auto',
+          overscrollBehavior: 'contain',
           background: c.surface,
           border: `1px solid ${c.accentBorder}`,
           borderRadius: layout.isMobile ? '18px 18px 0 0' : 18,
@@ -129,7 +134,10 @@ export function Modal({ open, onClose, title, description, labelId, children }) 
                 {title}
               </h2>
               {description ? (
-                <p style={{ fontSize: 13.5, lineHeight: 1.55, color: c.ink(0.62), margin: '8px 0 0' }}>
+                <p
+                  id={describedId}
+                  style={{ fontSize: 13.5, lineHeight: 1.55, color: c.ink(0.62), margin: '8px 0 0' }}
+                >
                   {description}
                 </p>
               ) : null}

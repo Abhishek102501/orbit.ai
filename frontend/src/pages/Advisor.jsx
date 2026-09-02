@@ -5,10 +5,15 @@ import { useOrbit } from '../store/OrbitProvider.jsx';
 import { BUDGET_OPTIONS, EXAMPLE_PROMPTS, SKILL_OPTIONS } from '../lib/content.js';
 
 /** Selectable pill used for the budget and skill-level chip rows. */
-function ChipGroup({ label, options, value, onPick, c }) {
+function ChipGroup({ id, label, options, value, onPick, c }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div
+      role="group"
+      aria-labelledby={`${id}-label`}
+      style={{ display: 'flex', flexDirection: 'column', gap: 6 }}
+    >
       <span
+        id={`${id}-label`}
         style={{
           fontSize: 11,
           color: c.ink(0.45),
@@ -26,6 +31,7 @@ function ChipGroup({ label, options, value, onPick, c }) {
               key={o.id}
               type="button"
               onClick={() => onPick(o.id)}
+              aria-pressed={active}
               style={{
                 fontSize: 12,
                 padding: '6px 11px',
@@ -134,10 +140,14 @@ export function Advisor() {
           boxShadow: `0 0 0 1px ${c.ring}, ${c.shadowMd}`,
         }}
       >
+        <label htmlFor="advisor-text" className="sr-only">
+          Describe what you need
+        </label>
         <textarea
+          id="advisor-text"
           value={advisorText}
           onChange={(e) => setAdvisorText(e.target.value)}
-          placeholder="I need a free AI tool to create a professional presentation. I'm a beginner."
+          placeholder="I need a free AI tool to create a professional presentation. I&#39;m a beginner…"
           rows={3}
           style={{
             width: '100%',
@@ -164,6 +174,7 @@ export function Advisor() {
           }}
         >
           <ChipGroup
+            id="advisor-budget"
             label="Budget"
             options={BUDGET_OPTIONS}
             value={advisorBudget}
@@ -171,6 +182,7 @@ export function Advisor() {
             c={c}
           />
           <ChipGroup
+            id="advisor-skill"
             label="Skill level"
             options={SKILL_OPTIONS}
             value={advisorSkill}
@@ -179,7 +191,8 @@ export function Advisor() {
           />
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 180 }}>
-            <span
+            <label
+              htmlFor="advisor-task"
               style={{
                 fontSize: 11,
                 color: c.ink(0.45),
@@ -188,8 +201,9 @@ export function Advisor() {
               }}
             >
               Task
-            </span>
+            </label>
             <select
+              id="advisor-task"
               value={advisorTask}
               onChange={(e) => setAdvisorTask(e.target.value)}
               style={{
@@ -267,6 +281,8 @@ export function Advisor() {
 
       {advisorLoading ? (
         <div
+          role="status"
+          aria-live="polite"
           style={{
             textAlign: 'center',
             padding: '60px 0',
@@ -365,7 +381,7 @@ export function Advisor() {
                   >
                     {best.name}
                   </a>
-                  <span style={{ fontSize: 22, fontWeight: 700, color: c.accentText }}>
+                  <span className="tabular" style={{ fontSize: 22, fontWeight: 700, color: c.accentText }}>
                     {best.score}% Match
                   </span>
                 </div>
@@ -423,7 +439,7 @@ export function Advisor() {
                   <a
                     href={best.website}
                     target="_blank"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     style={{
                       textDecoration: 'none',
                       border: `1px solid ${c.accent}`,
@@ -500,7 +516,10 @@ export function Advisor() {
                   <div style={{ fontSize: '14.5px', fontWeight: 500 }}>{a.name}</div>
                   <div style={{ fontSize: 12, color: c.ink(0.55) }}>{a.reasonsJoined}</div>
                 </div>
-                <span style={{ fontSize: 16, fontWeight: 700, color: c.accentText, flex: 'none' }}>
+                <span
+                  className="tabular"
+                  style={{ fontSize: 16, fontWeight: 700, color: c.accentText, flex: 'none' }}
+                >
                   {a.score}%
                 </span>
               </a>

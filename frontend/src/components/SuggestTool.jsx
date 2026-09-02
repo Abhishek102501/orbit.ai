@@ -2,10 +2,23 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import Icon from './Icon.jsx';
 import Hoverable from './Hoverable.jsx';
 import Modal from './Modal.jsx';
+import GlassPanel from './GlassPanel.jsx';
+import SectionHeader from './SectionHeader.jsx';
+import ContributionSteps from './ContributionSteps.jsx';
 import { useReveal } from '../hooks/useReveal.js';
 import { useOrbit } from '../store/OrbitProvider.jsx';
 import { SUGGEST_STEPS } from '../lib/content.js';
 import { LIMITS, submitToolSuggestion, validateSuggestion } from '../lib/suggestions.js';
+
+/** Submit order, so a failed validation focuses the first field that is actually wrong. */
+const FIELD_ORDER = [
+  'toolName',
+  'websiteUrl',
+  'category',
+  'description',
+  'submitterName',
+  'submitterEmail',
+];
 
 const EMPTY = {
   toolName: '',
@@ -74,7 +87,9 @@ function Field({ id, label, icon, required, error, hint, counter, children }) {
  */
 export function SuggestTool() {
   const { c, layout, CATEGORIES, TOOLS } = useOrbit();
-  const reveal = useReveal();
+  // Observer-driven: the timeline steps live inside a clipped panel, where a
+  // scroll-driven timeline does not resolve against the viewport.
+  const reveal = useReveal(0.12, { observe: true });
 
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(EMPTY);
@@ -84,7 +99,11 @@ export function SuggestTool() {
   const pending = useRef(false);
 
   const liveErrors = useMemo(() => validateSuggestion(draft), [draft]);
-  const submittable = Object.keys(liveErrors).length === 0;
+  // Kept for the resting styling only. The button itself stays enabled until a
+  // request actually starts: a submit disabled by validation gives a keyboard or
+  // screen-reader user nothing to press and no explanation of what is wrong.
+  const complete = Object.keys(liveErrors).length === 0;
+  const busy = state === 'submitting';
 
   const set = (key) => (e) => {
     const { value } = e.target;
@@ -114,6 +133,13 @@ export function SuggestTool() {
     const found = validateSuggestion(draft);
     if (Object.keys(found).length) {
       setErrors(found);
+      // Land the caret on the first problem rather than leaving the user to hunt
+      // for the red border — especially when the dialog has scrolled.
+      const first = FIELD_ORDER.find((key) => found[key]);
+      if (first) {
+        const el = document.getElementById(`suggest-${first}`);
+        if (el) el.focus();
+      }
       return;
     }
 
@@ -149,113 +175,76 @@ export function SuggestTool() {
 
   const describedBy = (key) => (errors[key] ? `suggest-${key}-error` : undefined);
 
+  // Both figures come straight from the loaded catalog rather than being written
+  // into the page, so they cannot drift out of date.
+  const stats = [
+    { value: TOOLS.length, label: 'AI tools listed', icon: 'layers' },
+    { value: CATEGORIES.length, label: 'Categories covered', icon: 'grid' },
+  ];
+
   return (
     <section
       ref={reveal.ref}
+      className={reveal.className}
       aria-labelledby="suggest-heading"
       style={{
+        position: 'relative',
         maxWidth: 1160,
         margin: '0 auto',
-        padding: `0 ${layout.sidePad} ${layout.sectionGap}`,
-        ...reveal.style,
+        padding: `0 ${layout.sidePad}`,
       }}
     >
-      <div
-        style={{
-          position: 'relative',
-          overflow: 'hidden',
-          background: c.surface,
-          border: `1px solid ${c.accentBorder}`,
-          borderRadius: 18,
-          padding: layout.finderPad,
-          boxShadow: `0 0 0 1px ${c.ring}, ${c.shadowMd}`,
-        }}
-      >
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: `radial-gradient(110% 130% at 82% -10%, ${c.accentSoft}, transparent 60%)`,
-            pointerEvents: 'none',
-          }}
-        />
-
+      <GlassPanel variant="flow" padding={layout.suggestPad} bloom="right" pattern>
         <div
           style={{
-            position: 'relative',
-            display: 'flex',
-            flexDirection: layout.suggestDir,
-            gap: layout.isMobile ? 28 : 48,
-            alignItems: layout.suggestDir === 'row' ? 'center' : 'stretch',
+            display: 'grid',
+            gridTemplateColumns: layout.suggestDir === 'row' ? '1.05fr 0.95fr' : '1fr',
+            gap: layout.isMobile ? 36 : 56,
+            alignItems: 'center',
           }}
         >
           {/* ------------------------------------------------------------ copy */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                fontSize: 11,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: c.accentText,
-                marginBottom: 14,
-              }}
-            >
-              <Icon name="sparkle" size={12} />
-              Community contribution
-            </span>
-
-            <h2
-              id="suggest-heading"
-              style={{
-                fontSize: layout.finderTitleSize,
-                letterSpacing: '-0.03em',
-                lineHeight: 1.15,
-                margin: '0 0 10px',
-                maxWidth: 460,
-              }}
-            >
-              Know an AI tool we missed?
-            </h2>
-
-            <p
-              style={{
-                fontSize: 14.5,
-                lineHeight: 1.6,
-                color: c.ink(0.62),
-                margin: '0 0 22px',
-                maxWidth: 460,
-              }}
-            >
-              The AI ecosystem is growing every day. Help us keep Orbit ahead by suggesting tools
-              that deserve to be discovered.
-            </p>
+          <div style={{ minWidth: 0 }}>
+            <SectionHeader
+              eyebrow="Community contribution"
+              titleId="suggest-heading"
+              title={
+                <>
+                  Know an AI tool
+                  <br />
+                  <span className="accent-text">we missed?</span>
+                </>
+              }
+              subtitle="The AI ecosystem is growing every day. Help us keep Orbit ahead by suggesting tools that deserve to be discovered."
+              size="clamp(28px, 3vw, 40px)"
+              maxWidth={420}
+            />
 
             <Hoverable
               as="button"
               type="button"
-              className="tf-cta"
+              className="tf-cta cta-lift"
               onClick={() => setOpen(true)}
               style={{
+                marginTop: 28,
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 8,
+                gap: 9,
                 minHeight: 48,
-                padding: '0 22px',
-                background: c.accent,
+                padding: '0 24px',
+                // Outlined, not filled. The Advisor block above carries the one
+                // filled action on this stretch of the page; a second solid button
+                // here would flatten the order between the two sections.
+                background: 'transparent',
                 border: `1px solid ${c.accent}`,
-                borderRadius: 12,
-                color: c.onAccent,
+                borderRadius: 999,
+                color: c.accent,
                 fontWeight: 600,
                 fontSize: 14.5,
                 fontFamily: 'Inter',
                 cursor: 'pointer',
-                transition: 'filter 0.25s ease',
               }}
-              hoverStyle={{ filter: 'brightness(1.07)' }}
+              hoverStyle={{ background: c.signalTrack }}
             >
               <Icon name="plus" size={15} />
               Suggest an AI Tool
@@ -264,62 +253,91 @@ export function SuggestTool() {
               </span>
             </Hoverable>
 
-            <p style={{ fontSize: 12.5, color: c.ink(0.5), margin: '14px 0 0' }}>
+            <p
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 7,
+                fontSize: 12.5,
+                color: c.ink(0.55),
+                margin: '16px 0 0',
+              }}
+            >
+              <span aria-hidden="true" style={{ display: 'flex', color: c.signal }}>
+                <Icon name="shield" size={13} />
+              </span>
               Your suggestion will be reviewed before being added to the directory.
             </p>
-          </div>
 
-          {/* -------------------------------------------------------- how it works */}
-          <div
-            style={{
-              flex: 'none',
-              width: layout.suggestDir === 'row' ? 300 : '100%',
-              display: 'grid',
-              gap: 10,
-            }}
-          >
-            {SUGGEST_STEPS.map((step) => (
-              <div
-                key={step.n}
-                style={{
-                  display: 'flex',
-                  gap: 12,
-                  padding: '13px 15px',
-                  borderRadius: 12,
-                  border: `1px solid ${c.ink(0.1)}`,
-                  background: c.ink(0.02),
-                }}
-              >
-                <span
+            {/* --------------------------------------------------------- metrics */}
+            <dl
+              style={{
+                display: 'flex',
+                alignItems: 'stretch',
+                flexWrap: 'wrap',
+                gap: layout.isMobile ? 22 : 32,
+                margin: 0,
+                marginTop: layout.isMobile ? 28 : 36,
+                paddingTop: layout.isMobile ? 22 : 26,
+                borderTop: `1px solid ${c.ink(0.1)}`,
+              }}
+            >
+              {stats.map((stat, i) => (
+                <div
+                  key={stat.label}
                   style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: c.accentText,
-                    fontFamily: 'JetBrains Mono, monospace',
-                    flex: 'none',
-                    paddingTop: 1,
+                    display: 'flex',
+                    alignItems: 'stretch',
+                    gap: layout.isMobile ? 22 : 32,
                   }}
                 >
-                  {step.n}
-                </span>
-                <span style={{ minWidth: 0 }}>
-                  <span style={{ display: 'block', fontSize: 13.5, fontWeight: 600 }}>
-                    {step.title}
-                  </span>
-                  <span
-                    style={{
-                      display: 'block',
-                      fontSize: 12.5,
-                      lineHeight: 1.5,
-                      color: c.ink(0.58),
-                      marginTop: 3,
-                    }}
-                  >
-                    {step.body}
-                  </span>
-                </span>
-              </div>
-            ))}
+                  {i > 0 && !layout.isMobile ? (
+                    <span aria-hidden="true" style={{ width: 1, background: c.ink(0.12) }} />
+                  ) : null}
+                  {/* Column flex so `order` can put the figure above its label while
+                      the markup keeps the term-then-definition order a description
+                      list requires. */}
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <dt
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        fontSize: 12.5,
+                        color: c.ink(0.6),
+                        order: 2,
+                      }}
+                    >
+                      {stat.label}
+                    </dt>
+                    <dd
+                      className="num"
+                      style={{
+                        margin: '0 0 4px',
+                        fontSize: 26,
+                        fontWeight: 500,
+                        letterSpacing: '-0.02em',
+                        lineHeight: 1,
+                        color: c.text,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 9,
+                      }}
+                    >
+                      <span aria-hidden="true" style={{ display: 'flex', color: c.signal }}>
+                        <Icon name={stat.icon} size={15} />
+                      </span>
+                      {stat.value}
+                    </dd>
+                  </div>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          {/* -------------------------------------------------------- timeline */}
+          <div style={{ minWidth: 0 }}>
+            <ContributionSteps steps={SUGGEST_STEPS} />
 
             <p
               style={{
@@ -327,8 +345,9 @@ export function SuggestTool() {
                 alignItems: 'center',
                 gap: 7,
                 fontSize: 12,
-                color: c.ink(0.45),
-                margin: '4px 0 0',
+                color: c.ink(0.5),
+                margin: '18px 0 0',
+                paddingLeft: 50,
               }}
             >
               <Icon name="sparkle" size={12} />
@@ -336,34 +355,7 @@ export function SuggestTool() {
             </p>
           </div>
         </div>
-
-        {/* --------------------------------------------------------------- stats */}
-        <div
-          style={{
-            position: 'relative',
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: layout.isMobile ? 22 : 44,
-            marginTop: layout.isMobile ? 26 : 34,
-            paddingTop: layout.isMobile ? 22 : 26,
-            borderTop: `1px solid ${c.ink(0.1)}`,
-          }}
-        >
-          {[
-            { value: TOOLS.length, label: 'AI tools listed' },
-            { value: CATEGORIES.length, label: 'Categories covered' },
-          ].map((stat) => (
-            <div key={stat.label}>
-              <span style={{ display: 'block', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em' }}>
-                {stat.value}
-              </span>
-              <span style={{ display: 'block', fontSize: 12, color: c.ink(0.55), marginTop: 2 }}>
-                {stat.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      </GlassPanel>
 
       {/* ---------------------------------------------------------------- modal */}
       <Modal
@@ -427,9 +419,10 @@ export function SuggestTool() {
                 id="suggest-toolName"
                 value={draft.toolName}
                 onChange={set('toolName')}
-                placeholder="e.g. Perplexity"
+                placeholder="e.g. Perplexity…"
                 maxLength={LIMITS.toolName}
                 autoComplete="off"
+                spellCheck={false}
                 aria-invalid={errors.toolName ? true : undefined}
                 aria-describedby={describedBy('toolName')}
                 style={inputStyle('toolName')}
@@ -443,9 +436,10 @@ export function SuggestTool() {
                 inputMode="url"
                 value={draft.websiteUrl}
                 onChange={set('websiteUrl')}
-                placeholder="https://example.com"
+                placeholder="https://example.com…"
                 maxLength={LIMITS.websiteUrl}
                 autoComplete="off"
+                spellCheck={false}
                 aria-invalid={errors.websiteUrl ? true : undefined}
                 aria-describedby={describedBy('websiteUrl')}
                 style={inputStyle('websiteUrl')}
@@ -477,13 +471,18 @@ export function SuggestTool() {
               icon="edit"
               required
               error={errors.description}
-              counter={`${draft.description.length}/${LIMITS.description}`}
+              counter={
+                <span className="tabular">
+                  {draft.description.length}/{LIMITS.description}
+                  <span className="sr-only"> characters used</span>
+                </span>
+              }
             >
               <textarea
                 id="suggest-description"
                 value={draft.description}
                 onChange={set('description')}
-                placeholder="What makes this AI tool worth discovering?"
+                placeholder="What makes this AI tool worth discovering?…"
                 maxLength={LIMITS.description}
                 rows={3}
                 aria-invalid={errors.description ? true : undefined}
@@ -507,7 +506,7 @@ export function SuggestTool() {
                   id="suggest-submitterName"
                   value={draft.submitterName}
                   onChange={set('submitterName')}
-                  placeholder="Optional"
+                  placeholder="e.g. Ada Lovelace…"
                   maxLength={LIMITS.submitterName}
                   autoComplete="name"
                   style={inputStyle('submitterName')}
@@ -526,9 +525,11 @@ export function SuggestTool() {
                   type="email"
                   value={draft.submitterEmail}
                   onChange={set('submitterEmail')}
-                  placeholder="Optional"
+                  placeholder="you@company.com…"
                   maxLength={LIMITS.submitterEmail}
                   autoComplete="email"
+                  inputMode="email"
+                  spellCheck={false}
                   aria-invalid={errors.submitterEmail ? true : undefined}
                   aria-describedby={
                     errors.submitterEmail ? 'suggest-submitterEmail-error' : 'suggest-submitterEmail-hint'
@@ -551,7 +552,7 @@ export function SuggestTool() {
               as="button"
               type="submit"
               className="tf-cta"
-              disabled={!submittable || state === 'submitting'}
+              disabled={busy}
               style={{
                 minHeight: 48,
                 padding: '0 22px',
@@ -562,17 +563,19 @@ export function SuggestTool() {
                 fontWeight: 600,
                 fontSize: 14.5,
                 fontFamily: 'Inter',
-                cursor: submittable && state !== 'submitting' ? 'pointer' : 'not-allowed',
-                opacity: submittable && state !== 'submitting' ? 1 : 0.5,
+                cursor: busy ? 'progress' : 'pointer',
+                // Dimmed while incomplete as a hint, but still pressable — pressing
+                // it is what surfaces the inline errors.
+                opacity: complete && !busy ? 1 : 0.72,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
                 transition: 'filter 0.2s ease, opacity 0.2s ease',
               }}
-              hoverStyle={submittable && state !== 'submitting' ? { filter: 'brightness(1.07)' } : undefined}
+              hoverStyle={busy ? undefined : { filter: 'brightness(1.07)' }}
             >
-              {state === 'submitting' ? (
+              {busy ? (
                 <span
                   aria-hidden="true"
                   style={{
@@ -585,8 +588,8 @@ export function SuggestTool() {
                   }}
                 />
               ) : null}
-              {state === 'submitting' ? 'Submitting…' : 'Submit suggestion'}
-              {state === 'submitting' ? null : (
+              {busy ? 'Submitting…' : 'Submit Suggestion'}
+              {busy ? null : (
                 <span className="tf-arrow" style={{ display: 'flex' }}>
                   <Icon name="arrowRight" size={15} />
                 </span>

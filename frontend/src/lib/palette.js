@@ -9,6 +9,7 @@
  *
  *   accent / accentText / accentSoft / accentSoftStrong / accentBorder / onAccent
  *   badgeBg / badgeText / pros / cons / hoverRing
+ *   signal / signalInk / signalTrack / signalTick / signalGlow  (match instrument only)
  *   shadowCard / shadowMd / shadowLg / shadowToast / vignette / vignetteSoft
  *   shimmerMid / mediaBlend / mediaOpacity / preview / ctaPanel / logoGlow
  *
@@ -34,7 +35,16 @@ export const DARK = {
   // The solid interactive colour flips polarity between themes: a light capsule on the
   // dark ground, a deep teal one on the light ground. `onAccent` is the ink that sits on
   // it, so the pair always clears contrast without either theme borrowing the other's.
-  accent: '#afb3b7',
+  // The interactive colour. It was #afb3b7 — byte-identical to `text` — so every
+  // primary button on the site rendered as a grey slab and read as disabled. This is
+  // the brand steel (#69818d) and the match mint (#5ee0d0) resolved into one hue:
+  // the same green-cyan family, chroma held well below the mint so it never reads as
+  // neon, and lightness placed so the dark ground ink (`onAccent`) clears 7.9:1 on it.
+  //
+  // It sits deliberately below `signal` in brightness. `signal` still owns
+  // measurement and must stay the brighter of the two, or a score stops being the
+  // most luminous thing on the screen.
+  accent: '#45c4b0',
   accentText: '#c9d3d8',
   accentSoft: 'rgba(105,129,141,0.14)',
   accentSoftStrong: 'rgba(105,129,141,0.22)',
@@ -47,6 +57,23 @@ export const DARK = {
   cons: '#e0a8a8',
   star: '#f5b93f',
   hoverRing: '#3e606b',
+
+  // --- match instrument -------------------------------------------------
+  // The one saturated hue in the palette, and it is spent on exactly one thing:
+  // a score the engine computed. `accent` is `text` in this theme (both #afb3b7),
+  // so a match bar painted in `accent` would read as another grey rule rather
+  // than as a measurement. `signal` pulls the brand steel (#69818d) up in chroma
+  // and lightness into the same hue family — it belongs to Orbit rather than
+  // being bolted on — and reads as instrument phosphor against the teal ground.
+  // 10.5:1 on `bg`, 8.9:1 on `surface`.
+  //
+  // Rule: nothing that is not a measurement may use these. Their meaning comes
+  // from how rarely they appear.
+  signal: '#5ee0d0',
+  signalInk: '#7fe8db',      // the numeral, a touch lighter so it holds at large sizes
+  signalTrack: 'rgba(94,224,208,0.16)',
+  signalTick: 'rgba(175,179,183,0.22)',
+  signalGlow: 'rgba(94,224,208,0.28)',
   shadowCard: '0 16px 34px rgba(0,0,0,0.4)',
   shadowMd: '0 24px 60px rgba(0,0,0,0.4)',
   shadowLg: '0 30px 70px rgba(0,0,0,0.55)',
@@ -82,7 +109,10 @@ export const LIGHT = {
   glassBorder: 'rgba(13,31,35,0.16)',
   glassIcon: '#2d4a53',
   glassShadow: '0 6px 18px rgba(13,31,35,0.18)',
-  accent: '#2d4a53',
+  // Harmonised with the dark theme: the same teal family rather than the old
+  // blue-slate, so the brand reads as one colour in both schemes. White ink
+  // (`onAccent`) clears 5.3:1 on it.
+  accent: '#0f6f63',
   accentText: '#2d4a53',
   accentSoft: 'rgba(105,129,141,0.14)',
   accentSoftStrong: 'rgba(105,129,141,0.22)',
@@ -93,6 +123,16 @@ export const LIGHT = {
   badgeText: '#eef1f2',
   pros: '#2e7d52',
   cons: '#b0453f',
+
+  // --- match instrument ---
+  // Same hue, inverted for a near-white ground: the dark theme's mint would
+  // vanish on #fafbfb, so light mode takes the deep end of the same teal.
+  // 4.85:1 on `surface`.
+  signal: '#0b7d71',
+  signalInk: '#08655c',
+  signalTrack: 'rgba(11,125,113,0.14)',
+  signalTick: 'rgba(13,31,35,0.20)',
+  signalGlow: 'rgba(11,125,113,0.18)',
   // A lighter gold washes out on the near-white ground; this clears 4.5:1 on it.
   star: '#b8790a',
   hoverRing: '#a9b6bc',

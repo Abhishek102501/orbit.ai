@@ -2,55 +2,95 @@ import Icon from './Icon.jsx';
 import BrandLogo from './BrandLogo.jsx';
 import Hoverable from './Hoverable.jsx';
 import { useOrbit } from '../store/OrbitProvider.jsx';
-import { NAV_ACTIONS, NAV_ITEMS } from '../lib/content.js';
+import { NAV_CTA, NAV_ITEMS, NAV_UTILITY } from '../lib/content.js';
 
 /**
- * One primary-nav entry. Real destinations render as anchors; the not-yet-built ones
- * render as buttons so a click cannot land on the 404 screen. Both share the same
- * styling, so wiring one up later is a data change in `NAV_ITEMS`, not a visual one.
+ * One primary-nav entry.
+ *
+ * Every entry is a real link now. The previous version carried a `soon` branch that
+ * rendered destination-less items as inert buttons; nothing is marked `soon` any
+ * more, so the branch is gone rather than left behind as unused logic.
  */
 function NavItem({ item, active }) {
   const { c } = useOrbit();
-
-  const base = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    textDecoration: 'none',
-    fontSize: 13.5,
-    // index.css styles `nav a` as mono uppercase, which would apply to the real links
-    // but not to the placeholder buttons beside them. Pin all six to the same treatment.
-    fontFamily: 'Inter, system-ui, sans-serif',
-    textTransform: 'none',
-    letterSpacing: 'normal',
-    lineHeight: 1,
-    padding: '9px 13px',
-    borderRadius: 999,
-    border: '1px solid transparent',
-    background: active ? c.ink(0.06) : 'transparent',
-    color: active ? c.text : c.ink(0.66),
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-    transition: 'color 0.2s ease, background-color 0.2s ease',
-  };
-  const hover = { color: c.text, background: c.ink(0.07) };
-
-  if (item.soon) {
-    return (
-      <Hoverable as="button" type="button" style={{ ...base }} hoverStyle={hover}>
-        {item.label}
-      </Hoverable>
-    );
-  }
 
   return (
     <Hoverable
       as="a"
       href={item.href}
       aria-current={active ? 'page' : undefined}
-      style={base}
-      hoverStyle={hover}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        textDecoration: 'none',
+        fontSize: 13.5,
+        // index.css styles `nav a` as mono uppercase; the header wants sentence case.
+        fontFamily: 'Inter, system-ui, sans-serif',
+        textTransform: 'none',
+        letterSpacing: 'normal',
+        lineHeight: 1,
+        padding: '8px 12px',
+        borderRadius: 8,
+        background: 'transparent',
+        fontWeight: active ? 600 : 500,
+        color: active ? c.text : c.ink(0.7),
+        whiteSpace: 'nowrap',
+        transition: 'color 0.2s ease, background-color 0.2s ease',
+      }}
+      hoverStyle={{ color: c.text, background: c.ink(0.06) }}
     >
       {item.label}
+    </Hoverable>
+  );
+}
+
+/**
+ * Saved and Compare: the visitor's own working set.
+ *
+ * Icon-first and quieter than the CTA on purpose — these are somewhere you keep
+ * things, not the action the header is asking for. The count appears only once there
+ * is something to count, so an untouched session shows two plain icons rather than a
+ * pair of zeroes.
+ *
+ * The label is carried by `aria-label` and `title` rather than visible text, so the
+ * icon is never the only thing naming the destination.
+ */
+function UtilityAction({ item, count, active }) {
+  const { c } = useOrbit();
+  const label = count
+    ? `${item.label} (${count} ${count === 1 ? 'item' : 'items'})`
+    : item.label;
+
+  return (
+    <Hoverable
+      as="a"
+      href={item.href}
+      aria-label={label}
+      title={label}
+      aria-current={active ? 'page' : undefined}
+      style={{
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        height: 36,
+        padding: count ? '0 11px' : '0 9px',
+        borderRadius: 999,
+        textDecoration: 'none',
+        border: `1px solid ${active ? c.ink(0.18) : 'transparent'}`,
+        background: active ? c.ink(0.06) : 'transparent',
+        color: active ? c.text : c.ink(0.72),
+        flex: 'none',
+        transition: 'color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease',
+      }}
+      hoverStyle={{ color: c.text, background: c.ink(0.07) }}
+    >
+      <Icon name={item.icon} size={17} />
+      {count ? (
+        <span className="num" aria-hidden="true" style={{ fontSize: 11.5, color: c.accent }}>
+          {count}
+        </span>
+      ) : null}
     </Hoverable>
   );
 }
@@ -66,9 +106,12 @@ export function Header() {
     toggleTheme,
     toggleMobileNav,
     mobileNavOpen,
+    saved,
+    compareIds,
   } = useOrbit();
 
   const themeLabel = isLight ? 'Switch to dark mode' : 'Switch to light mode';
+  const counts = { saved: saved.length, compare: compareIds.length };
 
   const iconButton = {
     width: 36,
@@ -98,7 +141,7 @@ export function Header() {
         zIndex: 40,
         padding: layout.navOuterPad,
         // The bar itself is transparent; the capsule inside carries the surface, so the
-        // nav reads as floating over the page rather than as a docked strip.
+        // nav floats over the page at every scroll position.
         background: 'transparent',
         pointerEvents: 'none',
       }}
@@ -114,16 +157,18 @@ export function Header() {
           gap: 12,
           padding: layout.navPillPad,
           borderRadius: 999,
-          background: `rgba(${c.surfaceRgb},0.82)`,
-          border: `1px solid ${c.ink(0.12)}`,
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
+          background: `rgba(${c.surfaceRgb},0.86)`,
+          border: `1px solid ${c.ink(0.1)}`,
+          backdropFilter: 'blur(18px)',
+          WebkitBackdropFilter: 'blur(18px)',
           boxShadow: c.shadowCard,
         }}
       >
+        {/* The wordmark is the Home link — which is why Home is not in the nav. */}
         <a
           href="#/"
           aria-label="Orbit.ai — home"
+          aria-current={route.name === 'home' ? 'page' : undefined}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -146,22 +191,36 @@ export function Header() {
         {layout.isDesktopNav ? (
           <nav
             aria-label="Primary"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-              margin: '0 auto',
-            }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '0 auto' }}
           >
             {NAV_ITEMS.map((item) => (
-              <NavItem key={item.label} item={item} active={!!item.match && route.name === item.match} />
+              <NavItem key={item.href} item={item} active={route.name === item.match} />
             ))}
           </nav>
         ) : (
           <span style={{ marginLeft: 'auto' }} />
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 'none' }}>
+          {layout.isDesktopNav ? (
+            <>
+              {NAV_UTILITY.map((item) => (
+                <UtilityAction
+                  key={item.href}
+                  item={item}
+                  count={counts[item.count]}
+                  active={route.name === item.match}
+                />
+              ))}
+
+              {/* Separates the visitor's own state from the page's action. */}
+              <span
+                aria-hidden="true"
+                style={{ width: 1, height: 20, background: c.ink(0.12), margin: '0 4px' }}
+              />
+            </>
+          ) : null}
+
           <Hoverable
             as="button"
             type="button"
@@ -179,58 +238,43 @@ export function Header() {
           </Hoverable>
 
           {layout.isDesktopNav ? (
-            <>
-              <Hoverable
-                as="button"
-                type="button"
-                style={{
-                  padding: '10px 14px',
-                  borderRadius: 999,
-                  border: '1px solid transparent',
-                  background: 'transparent',
-                  color: c.ink(0.72),
-                  fontSize: 13.5,
-                  fontFamily: 'Inter, system-ui, sans-serif',
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'color 0.2s ease, background-color 0.2s ease',
-                }}
-                hoverStyle={{ color: c.text, background: c.ink(0.07) }}
-              >
-                {NAV_ACTIONS.signIn.label}
-              </Hoverable>
-
-              <Hoverable
-                as="button"
-                type="button"
-                className="tf-cta"
-                style={{
-                  padding: '10px 18px',
-                  borderRadius: 999,
-                  border: `1px solid ${c.accent}`,
-                  background: c.accent,
-                  color: c.onAccent,
-                  fontSize: 13.5,
-                  fontFamily: 'Inter, system-ui, sans-serif',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'filter 0.2s ease',
-                }}
-                hoverStyle={{ filter: 'brightness(1.07)' }}
-              >
-                {NAV_ACTIONS.getStarted.label}
-              </Hoverable>
-            </>
+            <a
+              href={NAV_CTA.href}
+              className="tf-cta cta-lift"
+              aria-current={route.name === NAV_CTA.match ? 'page' : undefined}
+              style={{
+                marginLeft: 2,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 7,
+                padding: '10px 18px',
+                borderRadius: 999,
+                border: `1px solid ${c.accent}`,
+                background: c.accent,
+                color: c.onAccent,
+                fontSize: 13.5,
+                fontFamily: 'Inter, system-ui, sans-serif',
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+                textDecoration: 'none',
+              }}
+            >
+              {NAV_CTA.label}
+              <span className="tf-arrow" style={{ display: 'flex' }}>
+                <Icon name="arrowRight" size={14} />
+              </span>
+            </a>
           ) : null}
 
-          <button
+          <Hoverable
+            as="button"
             type="button"
             className="nav-menu-btn"
+            hoverStyle={iconButtonHover}
             onClick={toggleMobileNav}
-            aria-label="Open menu"
+            aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileNavOpen}
+            aria-haspopup="dialog"
             style={{
               ...iconButton,
               display: layout.mobileMenuBtnDisplay,
@@ -241,7 +285,7 @@ export function Header() {
             }}
           >
             <Icon name="menu" size={18} />
-          </button>
+          </Hoverable>
         </div>
       </div>
     </header>

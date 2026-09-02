@@ -14,11 +14,85 @@
   }
 }
 
+/* The header is sticky, so an anchor jump would otherwise land the target
+   underneath it — including the keyboard focus that follows the skip link. */
+html {
+  scroll-padding-top: 92px;
+}
+
+:root {
+  /* The display face, used only for the hero headline. Inter carries every other
+     role. Swap this one declaration to change the headline voice, or set it back to
+     the Inter stack to undo the serif entirely. */
+  --orbit-font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+}
+
+/* Optical sizing is what keeps a variable serif from looking like body text blown
+   up: at display size the contrast opens and the serifs sharpen. */
+.hero-display {
+  font-family: var(--orbit-font-display);
+  font-optical-sizing: auto;
+  font-variation-settings: 'opsz' 120;
+}
+
 body {
   margin: 0;
   background: #0d1f23;
   color: #afb3b7;
   font-family: 'Inter', system-ui, sans-serif;
+  /* Kills the 300ms double-tap-zoom delay on touch without disabling pinch zoom. */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(105, 129, 141, 0.18);
+}
+
+/* Headings set their own width limits; balancing keeps the last line from
+   dropping a single orphaned word. */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+/* Ratings, review counts and match percentages sit in columns and in rows that
+   re-render as the user filters. Fixed-width digits stop them shuffling. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Measured values — match percentages, scores, catalog counts — are set in the
+   mono face so a number Orbit computed is visibly distinct from a number that is
+   just part of a sentence. Tabular figures keep the digits in their columns while
+   results re-rank. */
+.num {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Scroll containers that overlay the page keep their scroll to themselves rather
+   than chaining into the document behind them. */
+.scroll-contain {
+  overscroll-behavior: contain;
+}
+
+/* Skip link — the first tab stop on the page. Off-screen until focused. */
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 300;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--orbit-surface-alt, #132e35);
+  color: var(--orbit-text, #e9e9ed);
+  box-shadow: 0 0 0 1px var(--orbit-focus, #afb3b7);
+  transform: translateY(calc(-100% - 20px));
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
 }
 
 /* The theme publishes these on :root (see OrbitProvider). The fallbacks are the dark
@@ -271,6 +345,480 @@ span:has(> .sp-avatar:hover) {
 @keyframes tfPulse {
   0%, 100% { opacity: 0.55; }
   50%      { opacity: 1; }
+}
+
+/* ---- scroll reveals -----------------------------------------------------
+   Sections rise into place as they enter the viewport.
+
+   Two implementations of the same effect. Where the browser can drive an
+   animation from scroll position (`animation-timeline: view()`, Chromium
+   today), the reveal is progress-based: it tracks the scroll rather than
+   firing a fixed-length clip, so it never plays late on a fast flick and never
+   finishes early on a slow one, and it runs off the main thread.
+
+   Where it cannot (Firefox, older Safari), useReveal adds `.is-in` from an
+   IntersectionObserver and a plain transition does the work. The base rule is
+   the fallback, so nothing depends on the newer feature being present.
+--------------------------------------------------------------------------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-rise, 26px));
+  transition:
+    opacity 640ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 640ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes revealRise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--reveal-rise, 26px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .reveal {
+    /* The animation owns both properties now; the transition would otherwise
+       fight it every time the scroll position changes. */
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: revealRise linear both;
+    animation-timeline: view();
+    /* Resolved by the time the element is a third of the way up the viewport,
+       so it is settled before it becomes the thing being read. */
+    animation-range: entry 0% cover 30%;
+  }
+
+}
+
+/* ---- fade-only reveal ---------------------------------------------------
+   `transform` on an ancestor creates a containing block, which stops
+   `position: sticky` inside it from resolving against the viewport — the
+   pinned step list simply never sticks. Sections that contain sticky children
+   use this variant, which travels no distance and so never sets a transform.
+--------------------------------------------------------------------------- */
+.reveal-fade {
+  opacity: 0;
+  transition: opacity 640ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-fade.is-in {
+  opacity: 1;
+}
+
+@keyframes revealFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@supports (animation-timeline: view()) {
+  .reveal-fade {
+    opacity: 1;
+    transition: none;
+    animation: revealFade linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 22%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-io,
+  .reveal-io.is-in,
+  .reveal-fade,
+  .reveal-fade.is-in {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}
+
+/* ---- staggered groups ---------------------------------------------------
+   A grid of cards arrives in sequence rather than as one slab. The travel is
+   deliberately shorter than a section reveal: these sit inside a section that
+   is already moving, and two full-distance moves stacked on each other reads
+   as noise. Applied by putting `reveal-group` on the grid itself.
+--------------------------------------------------------------------------- */
+.reveal-group > * {
+  --reveal-rise: 14px;
+  opacity: 0;
+  transform: translateY(var(--reveal-rise));
+  transition:
+    opacity 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Revealed either by its own observer, or by the section it sits inside. */
+.reveal-group.is-in > *,
+.reveal.is-in .reveal-group > * {
+  opacity: 1;
+  transform: none;
+}
+
+.reveal.is-in .reveal-group > *:nth-child(2) { transition-delay: 70ms; }
+.reveal.is-in .reveal-group > *:nth-child(3) { transition-delay: 140ms; }
+.reveal.is-in .reveal-group > *:nth-child(4) { transition-delay: 210ms; }
+
+@supports (animation-timeline: view()) {
+  .reveal-group > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: revealRise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 32%;
+  }
+
+  /* Each position resolves a little later in the same scroll range, which reads
+     as a stagger without any card finishing so late it feels detached. */
+  .reveal-group > *:nth-child(2) { animation-range: entry 5% cover 37%; }
+  .reveal-group > *:nth-child(3) { animation-range: entry 10% cover 42%; }
+  .reveal-group > *:nth-child(4) { animation-range: entry 15% cover 47%; }
+}
+
+/* The global reduce rule collapses durations, but a scroll-driven animation is
+   progress-based rather than timed, so it needs saying explicitly: no travel,
+   no fade, content simply present. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal.is-in,
+  .reveal-group > * {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* ---- orbital visual -----------------------------------------------------
+   The rings turn on their own timings so the figure never repeats a pose,
+   and slowly enough that it reads as ambient rather than as something
+   demanding attention. Transforms sit on <g> wrappers with `transform-box:
+   fill-box` — without it the origin resolves against the SVG viewport and
+   the rings wobble off-centre instead of turning in place.
+--------------------------------------------------------------------------- */
+.orb-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.orb-spin-a { animation: orbSpin 46s linear infinite; }
+.orb-spin-b { animation: orbSpin 64s linear infinite reverse; }
+.orb-spin-c { animation: orbSpin 88s linear infinite; }
+
+@keyframes orbSpin {
+  to { transform: rotate(360deg); }
+}
+
+.orb-glow {
+  animation: orbGlow 8s ease-in-out infinite;
+}
+
+@keyframes orbGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.orb-particle {
+  animation: orbFloat 9s ease-in-out infinite;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+
+/* Infinite ambient loops stop entirely under reduced motion — collapsing their
+   duration would leave them frozen mid-turn rather than at rest. */
+@media (prefers-reduced-motion: reduce) {
+  .orb-spin-a,
+  .orb-spin-b,
+  .orb-spin-c,
+  .orb-glow,
+  .orb-particle {
+    animation: none !important;
+  }
+}
+
+/* Accent emphasis for a phrase inside a heading. Painted from the interactive
+   colour rather than the measurement mint: an emphasised phrase in a headline is
+   pointing at the action beside it, and `signal` has to stay reserved for values
+   the engine actually computed.
+
+   The flat colour is the base so the text can never render invisible; the
+   gradient only applies where the browser can genuinely clip a background to
+   glyphs. */
+.accent-text {
+  color: var(--orbit-accent, #45c4b0);
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .accent-text {
+    background-image: linear-gradient(
+      100deg,
+      var(--orbit-accent, #45c4b0),
+      var(--orbit-mint, #5ee0d0)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* ---- section header -----------------------------------------------------
+   Eyebrow, headline and support line resolve in that order. The offsets are
+   small enough that the block still reads as one gesture rather than as three
+   separate arrivals. Driven by whichever reveal wrapper the section uses. */
+.reveal.is-in .sh-eyebrow,
+.reveal-io.is-in .sh-eyebrow,
+.reveal-fade.is-in .sh-eyebrow { transition-delay: 0ms; }
+
+.reveal.is-in .sh-title,
+.reveal-io.is-in .sh-title,
+.reveal-fade.is-in .sh-title { transition-delay: 80ms; }
+
+.reveal.is-in .sh-sub,
+.reveal-io.is-in .sh-sub,
+.reveal-fade.is-in .sh-sub { transition-delay: 150ms; }
+
+.section-header .sh-eyebrow,
+.section-header .sh-title,
+.section-header .sh-sub {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 620ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.is-in .section-header .sh-eyebrow,
+.reveal.is-in .section-header .sh-title,
+.reveal.is-in .section-header .sh-sub,
+.reveal-io.is-in .section-header .sh-eyebrow,
+.reveal-io.is-in .section-header .sh-title,
+.reveal-io.is-in .section-header .sh-sub,
+.reveal-fade.is-in .section-header .sh-eyebrow,
+.reveal-fade.is-in .section-header .sh-title,
+.reveal-fade.is-in .section-header .sh-sub {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-header .sh-eyebrow,
+  .section-header .sh-title,
+  .section-header .sh-sub {
+    opacity: 1 !important;
+    transform: none !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* ---- contribution rail --------------------------------------------------
+   The steps carry no resting surface: the thread is the object, and boxing each
+   step turned one sequence into three unrelated cards. A surface appears only
+   under the pointer, and the node brightens with it. */
+.step-row {
+  background: transparent;
+  transition:
+    background-color 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.step-row:hover {
+  background: var(--orbit-step-hover, rgba(94, 224, 208, 0.06));
+  transform: translateX(3px);
+}
+
+.step-row .step-node {
+  transition: box-shadow 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.step-row:hover .step-node {
+  box-shadow:
+    0 0 0 5px var(--orbit-step-punch, #0d1f23),
+    0 0 16px var(--orbit-mint, #5ee0d0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-row:hover {
+    transform: none !important;
+  }
+}
+
+/* ---- premium surfaces ---------------------------------------------------
+   A glass panel is a translucent surface over a blur rather than a filled
+   rectangle, so whatever sits behind it still reads through and the panel
+   has depth instead of being a flat box. `.lift` adds the hover response.
+--------------------------------------------------------------------------- */
+.lift {
+  transition:
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lift:hover {
+  transform: translateY(-3px);
+}
+
+/* The CTA lifts a little and its arrow steps forward — the same nudge the
+   finder button uses, so the two read as one family. */
+.cta-lift {
+  transition:
+    transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cta-lift:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+}
+
+.cta-lift:active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lift:hover,
+  .cta-lift:hover,
+  .cta-lift:active {
+    transform: none !important;
+  }
+}
+
+/* ---- timeline -----------------------------------------------------------
+   Steps enter one after another once the section is in view. Delays are
+   short: the sequence should read as one gesture, not as three events. */
+/* Driven by `.reveal-io`, an observer-only variant. A scroll-driven timeline
+   cannot be trusted here: these steps sit inside a clipped panel, which becomes
+   the scrollport `view()` measures against, and the later steps froze part-way
+   through their reveal instead of resolving. */
+.reveal-io {
+  opacity: 0;
+  transition: opacity 560ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-io.is-in {
+  opacity: 1;
+}
+
+.reveal-io.is-in .timeline-step:nth-child(1) { transition-delay: 100ms; }
+.reveal-io.is-in .timeline-step:nth-child(2) { transition-delay: 190ms; }
+.reveal-io.is-in .timeline-step:nth-child(3) { transition-delay: 280ms; }
+
+.timeline-step {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 560ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 560ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-io.is-in .timeline-step {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-step {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* ---- discovery flow path ------------------------------------------------
+   One path, drawn by DiscoveryFlow between two measured anchors. Only
+   `stroke-dashoffset` is animated: the geometry is fixed the moment it is
+   measured, so the line draws itself along a route that never moves. Nothing
+   here touches layout, position or transform.
+--------------------------------------------------------------------------- */
+.flow-path {
+  stroke-dasharray: var(--len, 900);
+  stroke-dashoffset: 0;
+}
+
+.flow-node {
+  opacity: 1;
+}
+
+@keyframes flowDraw {
+  from { stroke-dashoffset: var(--len, 900); }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes flowNodeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@supports (animation-timeline: view()) {
+  .flow-path {
+    animation: flowDraw linear both;
+    animation-timeline: view();
+    animation-range: entry 20% cover 55%;
+  }
+
+  .flow-node {
+    animation: flowNodeIn linear both;
+    animation-timeline: view();
+    animation-range: cover 45% cover 60%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-path,
+  .flow-node {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ---- page ambience ------------------------------------------------------
+   One environment for the whole document instead of each section painting its
+   own ground. Two very large, very faint pools sit over the closing run, so
+   the light changes gradually as the page is scrolled rather than restarting
+   at every container edge. Painted behind everything and never interactive. */
+.page-ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- product demo -------------------------------------------------------
+   Results fade up into space the panel already reserved, so nothing below
+   them moves as they arrive. The stagger is a per-row `animation-delay` set
+   in the component; only opacity and a small transform are animated, never a
+   layout property. */
+.demo-result {
+  opacity: 0;
+  animation: demoRowIn 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes demoRowIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-result {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 /* Visually hidden but available to screen readers. */

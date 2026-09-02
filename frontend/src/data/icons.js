@@ -62,6 +62,10 @@ export const ICONS = {
   volumeOff: { els: [{ t: 'polygon', points: '3,9.5 3,14.5 7,14.5 12,19 12,5 7,9.5' },
     { t: 'line', x1: 16, y1: 10, x2: 21, y2: 15 }, { t: 'line', x1: 21, y1: 10, x2: 16, y2: 15 }] },
 
+  // Playback marks for the controls that pause continuous motion (the category marquee).
+  pause: { els: [{ t: 'line', x1: 9, y1: 5, x2: 9, y2: 19 }, { t: 'line', x1: 15, y1: 5, x2: 15, y2: 19 }] },
+  play: { fill: true, els: [{ t: 'polygon', points: '7,4.5 19,12 7,19.5' }] },
+
   // Social marks. Kept to shapes that are simple enough to verify by eye at render size;
   // each is rendered by <Icon> on currentColor like every other icon here.
   mail: { els: [{ t: 'rect', x: 2.5, y: 5, width: 19, height: 14, rx: 2.5 },

@@ -182,6 +182,7 @@ export function Compare() {
               <button
                 type="button"
                 onClick={t.onToggleCompare}
+                aria-label={`Remove ${t.name} from the comparison`}
                 style={{
                   fontSize: '11.5px',
                   color: c.ink(0.5),
@@ -210,10 +211,17 @@ export function Compare() {
                 gap: 8,
               }}
             >
+              <label htmlFor="compare-add" className="sr-only">
+                Search for a tool to add to the comparison
+              </label>
               <input
+                id="compare-add"
+                type="search"
                 value={compareSearch}
                 onChange={(e) => setCompareSearch(e.target.value)}
                 placeholder="Add a tool…"
+                autoComplete="off"
+                spellCheck={false}
                 style={{
                   minHeight: 32,
                   background: c.surfaceAlt,
@@ -264,9 +272,14 @@ export function Compare() {
         <>
           <div style={{ overflowX: 'auto', marginBottom: 28 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13.5px' }}>
+              <caption className="sr-only">
+                {compareTools.map((t) => t.name).join(', ')} compared across rating, pricing,
+                ease of use, platforms and key features
+              </caption>
               <thead>
                 <tr>
                   <th
+                    scope="col"
                     style={{
                       textAlign: 'left',
                       padding: '10px 14px',
@@ -282,6 +295,7 @@ export function Compare() {
                   {cards.map((t) => (
                     <th
                       key={t.id}
+                      scope="col"
                       style={{
                         textAlign: 'left',
                         padding: '10px 14px',
@@ -298,8 +312,11 @@ export function Compare() {
               <tbody>
                 {rows.map((row) => (
                   <tr key={row.label}>
-                    <td
+                    <th
+                      scope="row"
                       style={{
+                        textAlign: 'left',
+                        fontWeight: 400,
                         padding: '12px 14px',
                         color: c.ink(0.55),
                         borderBottom: `1px solid ${c.ink(0.06)}`,
@@ -307,10 +324,11 @@ export function Compare() {
                       }}
                     >
                       {row.label}
-                    </td>
+                    </th>
                     {row.values.map((v, i) => (
                       <td
                         key={i}
+                        className="tabular"
                         style={{
                           padding: '12px 14px',
                           color: c.text,

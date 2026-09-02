@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!--
+    The Orbit mark, as a real file so the favicon has something to resolve to.
+
+    The geometry is copied verbatim from <BrandMark> in src/components/BrandLogo.jsx —
+    same viewBox, same ellipse, same circle, same brand colours — so the tab icon and
+    the in-app mark are the same artwork rather than a stand-in. The rounded ground is
+    the app's own background colour (#0d1f23), which keeps the mark legible on a light
+    tab strip as well as a dark one.
+
+    Replace this with the real exported icon when it lands; nothing else needs changing.
+  -->
+  <rect width="32" height="32" rx="7" fill="#0d1f23"/>
+  <ellipse cx="16" cy="16" rx="12.5" ry="6" fill="none" stroke="#69818d" stroke-width="1.8" transform="rotate(-28 16 16)"/>
+  <circle cx="16" cy="16" r="4.8" fill="#c9d3d8"/>
+</svg>

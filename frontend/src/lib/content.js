@@ -84,8 +84,69 @@ export const SKILL_OPTIONS = [
 
 export const RATING_CHOICES = [0, 4.0, 4.5];
 
+/* ---------------------------------------------------------------------------
+   Product demo scenarios
+
+   Starting points for the interactive demo, not fixed answers. Each one is fed to
+   the real `engine.recommend()` at run time, so editing the text changes the result.
+
+   The wording is deliberate: these five were checked against the engine and each
+   returns a top three drawn entirely from the relevant category. A demonstration
+   should pick examples the product handles well - that is choosing a good example,
+   not staging the outcome.
+--------------------------------------------------------------------------- */
+export const DEMO_SCENARIOS = [
+  {
+    id: 'summarize',
+    label: 'Summarize videos',
+    icon: 'video',
+    requirement: 'Transcribe and summarize recorded video into notes I can study from',
+  },
+  {
+    id: 'slides',
+    label: 'Build slides',
+    icon: 'layers',
+    requirement: 'Design presentation slides automatically from an outline',
+  },
+  {
+    id: 'social',
+    label: 'Social content',
+    icon: 'image',
+    requirement: 'Generate images and captions for social media posts',
+  },
+  {
+    id: 'code',
+    label: 'Write code',
+    icon: 'code',
+    requirement: 'AI pair programmer inside my code editor that autocompletes and refactors code',
+  },
+  {
+    id: 'images',
+    label: 'Generate images',
+    icon: 'pen',
+    requirement: 'Generate original images from a text prompt for marketing',
+  },
+];
+
 export const HERO_VIDEO = '/assets/video_watermark_removed_fixed.mp4';
 export const SHOWCASE_VIDEO = '/uploads/Developer_organizes_AI_tools_202608301748.mp4';
+
+/* ---------------------------------------------------------------------------
+   Brand artwork
+
+   These raster exports have never existed in this repository — no image file of
+   any kind has ever been committed — so every request for them failed. It failed
+   *silently*: a single-page host answers an unknown path with index.html and a
+   200, so the browser received an HTML document where it expected a PNG instead
+   of an honest 404, and the failure never appeared as a network error.
+
+   They are empty on purpose. While a path is empty the brand components render
+   the vector mark in BrandLogo.jsx, which is real artwork and costs no request.
+   Drop the real files into public/ and put their paths here — nothing else has
+   to change.
+--------------------------------------------------------------------------- */
+export const BRAND_LOGO_DARK = '';
+export const BRAND_LOGO_LIGHT = '';
 
 /* ---------------------------------------------------------------------------
    Footer
@@ -171,22 +232,37 @@ export const SUGGEST_STEPS = [
 --------------------------------------------------------------------------- */
 
 /**
- * The primary nav. Items with an `href` point at routes the hash router resolves;
- * items marked `soon` have no destination yet and render as inert buttons rather than
- * links, so nothing in the header can navigate to the 404 screen. Give one an `href`
- * (and a `match` for the active state) and it becomes a real link with no other change.
+ * Navigation, in three tiers, and the header reads them in this order.
+ *
+ * Every entry here resolves to a route the hash router actually knows
+ * (`parseRoute()` in hooks/useHashRoute.js). Nothing is a placeholder: a header
+ * control that goes nowhere is worse than one that is absent, and the previous
+ * version had five of them.
+ *
+ * `Home` is deliberately not listed — the wordmark beside the nav already links
+ * there, and repeating it costs a slot without adding a destination.
  */
 export const NAV_ITEMS = [
-  { label: 'Home', href: '#/', match: 'home' },
-  { label: 'Explore', href: '#/discover', match: 'discover' },
+  { label: 'Discover', href: '#/discover', match: 'discover' },
   { label: 'Categories', href: '#/categories', match: 'categories' },
-  { label: 'Features', soon: true },
-  { label: 'Pricing', soon: true },
-  { label: 'About', soon: true },
 ];
 
-/** Header account actions. Same rule: no destination yet, so they are inert buttons. */
-export const NAV_ACTIONS = {
-  signIn: { label: 'Sign in', soon: true },
-  getStarted: { label: 'Get Started', soon: true },
-};
+/**
+ * Utility actions: the visitor's own working set rather than places to browse.
+ * They are kept out of NAV_ITEMS on purpose — separating them by position is what
+ * lets the header stay legible without a dropdown.
+ *
+ * `count` names the field on the store the badge reads. The badge is hidden at zero,
+ * so an untouched session shows two plain icons.
+ */
+export const NAV_UTILITY = [
+  { label: 'Saved', href: '#/saved', match: 'saved', icon: 'bookmark', count: 'saved' },
+  { label: 'Compare', href: '#/compare', match: 'compare', icon: 'layers', count: 'compare' },
+];
+
+/**
+ * The single primary action. Orbit has no signup and no accounts, so the strongest
+ * button in the header points at the thing Orbit actually does. It carries the same
+ * label as the closing call to action on the home page — one action, one name.
+ */
+export const NAV_CTA = { label: 'Ask the AI Advisor', href: '#/advisor', match: 'advisor' };

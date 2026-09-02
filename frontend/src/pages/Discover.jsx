@@ -150,8 +150,11 @@ export function Discover() {
           </div>
 
           <div>
-            <label style={labelStyle}>Category</label>
+            <label htmlFor="discover-category" style={labelStyle}>
+              Category
+            </label>
             <select
+              id="discover-category"
               value={filterCategory}
               onChange={(e) => onCategorySelect(e.target.value)}
               style={selectStyle}
@@ -166,8 +169,11 @@ export function Discover() {
           </div>
 
           <div>
-            <label style={labelStyle}>Pricing</label>
+            <label htmlFor="discover-pricing" style={labelStyle}>
+              Pricing
+            </label>
             <select
+              id="discover-pricing"
               value={filterPricing}
               onChange={(e) => onPricingSelect(e.target.value)}
               style={selectStyle}
@@ -180,8 +186,11 @@ export function Discover() {
           </div>
 
           <div>
-            <label style={labelStyle}>Platform</label>
+            <label htmlFor="discover-platform" style={labelStyle}>
+              Platform
+            </label>
             <select
+              id="discover-platform"
               value={filterPlatform}
               onChange={(e) => onPlatformSelect(e.target.value)}
               style={selectStyle}
@@ -194,8 +203,10 @@ export function Discover() {
             </select>
           </div>
 
-          <div>
-            <label style={{ ...labelStyle, marginBottom: 8 }}>Rating</label>
+          <div role="group" aria-labelledby="discover-rating-label">
+            <span id="discover-rating-label" style={{ ...labelStyle, marginBottom: 8 }}>
+              Rating
+            </span>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {RATING_CHOICES.map((v) => {
                 const active = minRating === v;
@@ -204,6 +215,7 @@ export function Discover() {
                     key={v}
                     type="button"
                     onClick={() => onRatingSelect(v)}
+                    aria-pressed={active}
                     style={{
                       fontSize: 12,
                       padding: '7px 12px',
@@ -239,10 +251,17 @@ export function Discover() {
               }}
             >
               <Icon name="search" size={15} />
+              <label htmlFor="discover-search" className="sr-only">
+                Search the AI tool catalog
+              </label>
               <input
+                id="discover-search"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="Search by name, task, or capability"
+                placeholder="Search by name, task, or capability…"
+                autoComplete="off"
+                spellCheck={false}
                 style={{
                   flex: 1,
                   minHeight: 40,
@@ -255,7 +274,11 @@ export function Discover() {
                 }}
               />
             </div>
+            <label htmlFor="discover-sort" className="sr-only">
+              Sort results
+            </label>
             <select
+              id="discover-sort"
               value={sortBy}
               onChange={(e) => onSortSelect(e.target.value)}
               style={{
@@ -276,7 +299,12 @@ export function Discover() {
             </select>
           </div>
 
-          <p style={{ fontSize: '12.5px', color: c.ink(0.45), margin: '0 0 18px' }}>
+          <p
+            role="status"
+            aria-live="polite"
+            className="tabular"
+            style={{ fontSize: '12.5px', color: c.ink(0.45), margin: '0 0 18px' }}
+          >
             {filteredTools.length} tools found
           </p>
 

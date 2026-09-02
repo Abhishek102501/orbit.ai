@@ -3,17 +3,21 @@ import { useState } from 'react';
 /**
  * The Orbit wordmark.
  *
- * Renders `/assets/orbit-logo-full.png` (or the light-theme variant). Those PNGs live in
- * the Claude Design project and could not be exported through the design API, so until
- * they are dropped into `public/assets/` this falls back to a vector stand-in at the same
- * height. Drop the real files in and they take over automatically — no code change.
+ * Renders the raster wordmark when one is configured (BRAND_LOGO_DARK /
+ * BRAND_LOGO_LIGHT in lib/content.js), and the vector mark when one is not.
+ *
+ * `src` is empty by default because those PNGs have never existed in this repository.
+ * Rendering an <img> with no usable source is not free: an empty `src` resolves against
+ * the page URL, so the browser fetches the HTML document and hands it to the image
+ * decoder. Checking the path first means no wasted request and no flash before the
+ * fallback appears. Fill the constants in and the raster takes over automatically.
  *
  * See README.md → "Brand assets".
  */
 export function BrandLogo({ src, height = 30, glow = '0 0 10px rgba(105,129,141,0.35)', color, markColor, accentColor }) {
   const [failed, setFailed] = useState(false);
 
-  if (!failed) {
+  if (src && !failed) {
     return (
       <img
         src={src}
@@ -85,14 +89,20 @@ export function BrandLogoFallback({
   );
 }
 
-/** Square mark used on the splash screen. */
-export function BrandMark({ height = 48 }) {
+/**
+ * Square mark used on the splash screen.
+ *
+ * Same rule as BrandLogo: `src` is empty until a real icon exists, and an empty source
+ * means the vector below is drawn directly rather than after a failed fetch. The same
+ * geometry is mirrored in public/orbit-mark.svg, which serves the browser tab icon.
+ */
+export function BrandMark({ height = 48, src = '' }) {
   const [failed, setFailed] = useState(false);
 
-  if (!failed) {
+  if (src && !failed) {
     return (
       <img
-        src="/assets/orbit-mark-icon.png"
+        src={src}
         alt=""
         onError={() => setFailed(true)}
         style={{

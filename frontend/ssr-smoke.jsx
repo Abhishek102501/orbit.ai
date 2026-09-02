@@ -106,24 +106,82 @@ out.push(render('Discover @ 640', Discover, { route: r('discover'), vw: 640 }));
 
 console.log('\n=== content spot-checks ===');
 const home = out[0].html;
+
+// Header rendered on its own, twice: once with an untouched session and once with
+// items saved and queued for comparison. The navigation assertions below use string
+// containment rather than patterns - an earlier attempt at a regex here wrote a
+// literal control character into the file instead of a word boundary.
+const headerWith = (opts) =>
+  renderToString(
+    <OrbitContext.Provider value={makeCtx(opts)}>
+      <Header />
+    </OrbitContext.Provider>,
+  );
+const navEmpty = headerWith({ route: r('home') });
+const navFull = headerWith({ route: r('saved'), saved: ['t01', 't02'], compareIds: ['t03'] });
 const checks = [
   ['hero headline', /Find the right AI\./],
-  ['hero sub', /Tell Orbit what you/],
+  // Anchored on "Orbit scores every tool", which appears only in the hero. The old
+  // check matched /Tell Orbit what you/, which also occurs in HOW_STEPS[0].body — it
+  // passed off the How-It-Works section and never actually tested the hero.
+  ['hero sub', /Describe the job, not the tool[\s\S]*?Orbit scores the catalog/],
   ['finder CTA', /Find the Right AI/],
   ['marquee track', /id="catMarqueeTrack"/],
   ['marquee animation', /marqueeScroll 38s linear infinite/],
-  ['staggered hero headline', /fadeUp 0\.9s cubic-bezier\(0\.16,1,0\.3,1\) 0\.24s both/],
-  ['finder heading', /Find the perfect AI for what you need\.[\s\S]*?Tell us what you/],
-  ['finder suggestions', /Try something like[\s\S]*?Create a cinematic product video/],
+  ['staggered hero headline', /fadeUp 0\.9s cubic-bezier\(0\.16,1,0\.3,1\) 0\.2s both/],
+  // The finder is now the hero's primary interaction: the eyebrow, the headline and
+  // the input have to render as one block, and the page must have exactly one <h1>.
+  ['finder lives in the hero', /Scored across[\s\S]*?categories[\s\S]*?Find the right AI\.[\s\S]*?finder-input/],
+  ['hero uses the display face', /class="hero-display"/],
+  // React separates adjacent text nodes with empty comments; strip them so the
+  // assertion reads the copy as a user would see it.
+  ['announcement pill counts the catalog', (html) => {
+    const flat = html.replace(/<!-- -->/g, '');
+    return /href="#\/discover"[\s\S]{0,900}?\d+ tools[\s\S]{0,200}?Scored across \d+ categories/.test(flat);
+  }],
+  ['single h1', (html) => (html.match(/<h1/g) || []).length === 1],
+  ['finder suggestions', /Try<\/span>[\s\S]*?Create a cinematic product video/],
   ['24 marquee cards', /(discover\?category=coding[\s\S]*?){2}/],
   ['how-it-works step', /Describe your requirement/],
   ['why orbit', /Works without a black box/],
-  ['cta', /Stop guessing\. Start matching\./],
+  // The closing CTA highlights "Start matching" in a <span>, so the phrase is split
+  // across markup. Strip tags and React's text-node separators and assert the copy a
+  // visitor actually reads.
+  ['cta', (html) => {
+    const text = html.replace(/<!-- -->/g, '').replace(/<[^>]+>/g, '');
+    return /Stop guessing\.\s*Start matching\./.test(text);
+  }],
+  ['cta orbital figure', /class="orb-ring/],
+  // Matches the class inside a list, not the whole attribute - the steps carry
+  // both `timeline-step` (reveal) and `step-row` (hover surface).
+  ['contribution timeline', (html) => html.split('timeline-step').length - 1 === 3],
+  ['section headers', (html) => (html.match(/class="section-header"/g) || []).length >= 2],
   ['showcase copy', /See Orbit in motion/],
+
+  // --- navigation information architecture ---
+  ['nav: no inert controls', () => !navEmpty.includes('aria-disabled')],
+  [
+    'nav: removed controls absent',
+    () => !['Sign in', 'Get Started', 'Pricing', 'About'].some((t) => navEmpty.includes(t)),
+  ],
+  [
+    'nav: saved, compare and advisor reachable',
+    () =>
+      ['#/saved', '#/compare', '#/advisor'].every((h) => navEmpty.includes('href="' + h + '"')),
+  ],
+  ['nav: zero counts hidden', () => !navEmpty.includes('aria-label="Saved (')],
+  [
+    'nav: counts render and pluralise',
+    () =>
+      navFull.includes('aria-label="Saved (2 items)"') &&
+      navFull.includes('aria-label="Compare (1 item)"'),
+  ],
 ];
 let bad = 0;
 for (const [label, re] of checks) {
-  const ok = re.test(home);
+  // A check is either a regex to match against the rendered HTML or a predicate,
+  // for assertions a regex cannot express (counting elements, for instance).
+  const ok = typeof re === 'function' ? re(home) : re.test(home);
   if (!ok) bad++;
   console.log('  ' + (ok ? 'PASS' : 'FAIL') + '  ' + label);
 }

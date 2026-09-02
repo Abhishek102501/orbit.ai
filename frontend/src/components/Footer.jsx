@@ -131,7 +131,10 @@ function Newsletter() {
 
       if (!isValidEmail(email)) {
         setState('error');
-        setMessage('Enter a valid email address.');
+        setMessage('Enter a valid email address, for example you@company.com.');
+        // Put the caret back in the field the message is about.
+        const field = document.getElementById(inputId);
+        if (field) field.focus();
         return;
       }
 
@@ -150,7 +153,7 @@ function Newsletter() {
         pending.current = false;
       }
     },
-    [email],
+    [email, inputId],
   );
 
   const invalid = state === 'error';
@@ -201,7 +204,9 @@ function Newsletter() {
               setMessage('');
             }
           }}
-          placeholder="you@company.com"
+          placeholder="you@company.com…"
+          inputMode="email"
+          spellCheck={false}
           aria-invalid={invalid || undefined}
           aria-describedby={statusId}
           disabled={loading}
@@ -306,21 +311,23 @@ export function Footer() {
     <footer
       style={{
         position: 'relative',
-        marginTop: 72,
-        borderTop: rule,
-        // A whisper of accent at the very top, so the footer reads as a continuation of
-        // the page rather than a separate slab.
-        background: `linear-gradient(180deg, ${c.accentSoft} 0%, transparent 180px)`,
+        // No top rule and no margin. A hard line plus a gap is what made the footer
+        // read as a fourth slab; the surface fading up out of the page ground is
+        // enough to mark the change, and the connector above already carries the eye
+        // across the boundary.
+        marginTop: 0,
+        background:
+          `linear-gradient(180deg, transparent 0%, rgba(${c.surfaceRgb},0.35) 140px, rgba(${c.surfaceRgb},0.5) 100%)`,
         overflow: 'hidden',
       }}
     >
       <div
         ref={reveal.ref}
+        className={reveal.className}
         style={{
           maxWidth: 1160,
           margin: '0 auto',
           padding: layout.footerPad,
-          ...reveal.style,
         }}
       >
         {/* ------------------------------------------------------- newsletter */}

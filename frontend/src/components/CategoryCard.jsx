@@ -58,7 +58,7 @@ function cardScrim(c, handover) {
  * Fixed-size card used by the home-page marquee. Photo bleeds behind a gradient scrim,
  * icon on top, name and tool count pinned to the bottom.
  */
-export function MarqueeCategoryCard({ category, count, photoWidth = 400 }) {
+export function MarqueeCategoryCard({ category, count, photoWidth = 400, duplicate = false }) {
   const { c } = useOrbit();
 
   return (
@@ -66,6 +66,11 @@ export function MarqueeCategoryCard({ category, count, photoWidth = 400 }) {
       as="a"
       className="cat-card"
       href={'#/discover?category=' + category.id}
+      // The track renders the list twice so the scroll can loop seamlessly. The
+      // second copy is the same set of links, so it is hidden from assistive tech
+      // and taken out of the tab order rather than read and tabbed through twice.
+      aria-hidden={duplicate ? 'true' : undefined}
+      tabIndex={duplicate ? -1 : undefined}
       style={{
         flex: 'none',
         width: 280,
@@ -111,7 +116,7 @@ export function MarqueeCategoryCard({ category, count, photoWidth = 400 }) {
  * Taller card used on the Categories page — adds the tagline and a chevron affordance.
  */
 export function CategoryCard({ category, count }) {
-  const { c } = useOrbit();
+  const { c, layout } = useOrbit();
 
   return (
     <Hoverable
@@ -124,6 +129,11 @@ export function CategoryCard({ category, count }) {
         background: c.surface,
         borderRadius: 12,
         padding: 26,
+        minHeight: layout.categoryCardMinH,
+        // Without this the min-height would resolve against the content box and the
+        // 26px padding would be added outside it, making every card 52px taller than
+        // the number asks for. There is no global border-box rule in this project.
+        boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
         gap: 14,
@@ -146,7 +156,10 @@ export function CategoryCard({ category, count }) {
         style={{ position: 'absolute', inset: 0, background: cardScrim(c, 56) }}
       />
       <IconChip name={category.icon} size={26} />
-      <div style={{ position: 'relative' }}>
+      {/* `marginTop: auto` sits on the text block rather than on the count, so the
+          name, tagline and count stay together at the foot of the card and the
+          space the extra height buys goes to the photograph above them. */}
+      <div style={{ position: 'relative', marginTop: 'auto' }}>
         <div style={{ fontSize: 18, fontWeight: 500, marginBottom: 6 }}>{category.name}</div>
         <p style={{ fontSize: 13, color: c.ink(0.6), margin: 0, lineHeight: 1.5 }}>
           {category.tagline}
@@ -157,7 +170,6 @@ export function CategoryCard({ category, count }) {
           position: 'relative',
           fontSize: 12,
           color: c.accentText,
-          marginTop: 'auto',
           display: 'flex',
           alignItems: 'center',
           gap: 4,

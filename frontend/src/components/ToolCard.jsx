@@ -19,7 +19,13 @@ export function ToolCard({ tool }) {
         flexDirection: 'column',
         gap: 12,
         boxShadow: `0 0 0 1px ${c.ring}`,
-        height: '100%',
+        // No `height: 100%` here. A grid item already stretches to its row (the
+        // default `align-items: normal` resolves to `stretch`), so the declaration
+        // was redundant - and actively harmful without a global `box-sizing:
+        // border-box`: it resolved against the *content* box, the 18px padding was
+        // then added outside it, and every card overflowed its own grid row by
+        // exactly its padding. With a 16px gap that left 20px of each row sitting
+        // on top of the row above it.
         transition: 'transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease',
       }}
       hoverStyle={{
@@ -40,6 +46,7 @@ export function ToolCard({ tool }) {
             </a>
             {tool.matchScore ? (
               <span
+                className="tabular"
                 style={{
                   fontSize: '10.5px',
                   fontWeight: 600,
@@ -65,10 +72,15 @@ export function ToolCard({ tool }) {
           </span>
         </div>
 
-        <button
+        <Hoverable
+          as="button"
           type="button"
           onClick={tool.onToggleSave}
-          aria-label="Save"
+          aria-label={
+            tool.isSaved ? `Remove ${tool.name} from saved` : `Save ${tool.name}`
+          }
+          aria-pressed={tool.isSaved}
+          title={tool.isSaved ? 'Remove from saved' : 'Save'}
           style={{
             width: 32,
             height: 32,
@@ -81,10 +93,16 @@ export function ToolCard({ tool }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            transition: 'border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease',
+          }}
+          hoverStyle={{
+            borderColor: c.accentBorder,
+            background: c.accentSoft,
+            color: c.accentText,
           }}
         >
           <Icon name={tool.isSaved ? 'bookmarkFilled' : 'bookmark'} size={15} />
-        </button>
+        </Hoverable>
       </div>
 
       <p
@@ -129,11 +147,16 @@ export function ToolCard({ tool }) {
           color: c.ink(0.7),
         }}
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: c.text }}>
+        <span
+          className="tabular"
+          style={{ display: 'flex', alignItems: 'center', gap: 4, color: c.text }}
+        >
           <Icon name="starFilled" size={13} />
           {tool.rating}
         </span>
-        <span style={{ color: c.ink(0.35) }}>({tool.reviewCount})</span>
+        <span className="tabular" style={{ color: c.ink(0.35) }}>
+          ({tool.reviewCount.toLocaleString()})
+        </span>
         <span
           style={{
             marginLeft: 'auto',
@@ -152,9 +175,11 @@ export function ToolCard({ tool }) {
       </div>
 
       <div style={{ display: 'flex', gap: 8, marginTop: 2 }}>
-        <button
+        <Hoverable
+          as="button"
           type="button"
           onClick={tool.onToggleCompare}
+          aria-pressed={tool.isComparing}
           style={{
             flex: 1,
             display: 'flex',
@@ -168,15 +193,19 @@ export function ToolCard({ tool }) {
             background: tool.compareBg,
             color: tool.compareColor,
             cursor: 'pointer',
+            transition: 'border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease',
           }}
+          hoverStyle={{ borderColor: c.accentBorder, background: c.accentSoft, color: c.accentText }}
         >
           <Icon name="layers" size={14} />
           {tool.compareLabel}
-        </button>
-        <a
+        </Hoverable>
+        <Hoverable
+          as="a"
           href={tool.website}
           target="_blank"
-          rel="noopener"
+          rel="noopener noreferrer"
+          hoverStyle={{ background: c.accentSoft }}
           style={{
             flex: 1,
             textDecoration: 'none',
@@ -187,13 +216,14 @@ export function ToolCard({ tool }) {
             fontSize: '12.5px',
             padding: '9px 10px',
             borderRadius: 8,
-            border: `1px solid ${c.accent}`,
+              border: `1px solid ${c.accent}`,
             color: c.accentText,
+            transition: 'background-color 0.2s ease',
           }}
         >
           Visit
           <Icon name="arrowUpRight" size={13} />
-        </a>
+        </Hoverable>
       </div>
 
       <a

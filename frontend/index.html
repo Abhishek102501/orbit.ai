@@ -3,17 +3,24 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <link rel="icon" type="image/png" href="/assets/orbit-mark-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/orbit-mark.svg" />
     <title>Orbit.ai — Find the right AI. Not just another AI.</title>
     <meta
       name="description"
       content="Tell Orbit what you're trying to accomplish. Discover, compare, and choose the AI tools that actually fit your needs."
     />
+    <!-- Repainted by the bootstrap script below and by OrbitProvider, so the browser
+         chrome tracks the stored theme rather than a fixed scheme. -->
+    <meta name="theme-color" content="#0d1f23" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Category photography and tool favicons are third-party origins the first
+         viewport already needs. -->
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="preconnect" href="https://www.google.com" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
     />
   </head>
   <body>
@@ -26,12 +33,18 @@
           var light = localStorage.getItem('orbit_theme') === 'light';
           document.body.style.background = light ? '#eef1f2' : '#0d1f23';
           document.body.style.color = light ? '#0d1f23' : '#afb3b7';
+          // `color-scheme` is what makes the scrollbars, native selects and form
+          // controls follow the theme instead of staying light.
+          document.documentElement.style.colorScheme = light ? 'light' : 'dark';
+          var tc = document.querySelector('meta[name="theme-color"]');
+          if (tc) tc.setAttribute('content', light ? '#eef1f2' : '#0d1f23');
         } catch (e) {
           /* storage unavailable — the provider still applies the default */
         }
       })();
     </script>
     <div id="root"></div>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

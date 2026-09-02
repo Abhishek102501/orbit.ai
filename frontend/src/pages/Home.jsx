@@ -1,21 +1,21 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Icon from '../components/Icon.jsx';
 import Hoverable from '../components/Hoverable.jsx';
-import AutoVideo from '../components/AutoVideo.jsx';
+import HeroVideo from '../components/HeroVideo.jsx';
 import PhotoBackdrop from '../components/PhotoBackdrop.jsx';
 import ToolFinder from '../components/ToolFinder.jsx';
 import SuggestTool from '../components/SuggestTool.jsx';
+import AdvisorCTA from '../components/AdvisorCTA.jsx';
+import ProductDemo from '../components/ProductDemo.jsx';
+import DiscoveryFlow from '../components/DiscoveryFlow.jsx';
 import ToolCard from '../components/ToolCard.jsx';
 import { MarqueeCategoryCard } from '../components/CategoryCard.jsx';
+import StepScroller from '../components/StepScroller.jsx';
+import { MatchBar, MatchScore } from '../components/MatchBar.jsx';
 import { useReveal } from '../hooks/useReveal.js';
 import { useOrbit } from '../store/OrbitProvider.jsx';
 import { PRODUCT_STILL_PHOTO } from '../data/categories.js';
-import {
-  HOW_STEPS,
-  WHY_POINTS,
-  HERO_VIDEO,
-  SHOWCASE_VIDEO,
-} from '../lib/content.js';
+import { HOW_STEPS, WHY_POINTS, HERO_VIDEO, EXAMPLE_PROMPTS } from '../lib/content.js';
 
 function SectionHeading({ title, action }) {
   const { layout } = useOrbit();
@@ -42,18 +42,32 @@ export function Home() {
     CATEGORIES,
     countByCategory,
     buildCard,
+    quickMatch,
   } = useOrbit();
 
-  const finderReveal = useReveal();
   const categoriesReveal = useReveal();
   const trendingReveal = useReveal();
   const featuredReveal = useReveal();
   const showcaseReveal = useReveal();
-  const howReveal = useReveal();
+  // Holds the pinned step list, so it must not leave a transform behind.
+  const howReveal = useReveal(0.12, { fade: true });
   const whyReveal = useReveal();
-  const ctaReveal = useReveal();
 
   const marqueeCategories = useMemo(() => [...CATEGORIES, ...CATEGORIES], [CATEGORIES]);
+
+  // The walkthrough shows Orbit's own output rather than a mock-up: this is the
+  // deterministic engine scored against one fixed example requirement, so the number
+  // and the reasons on the page are the same ones a visitor would get by typing it.
+  const walkthroughQuery = EXAMPLE_PROMPTS[0];
+  const walkthrough = useMemo(
+    () => (quickMatch ? quickMatch(walkthroughQuery, 1)[0] : null),
+    [quickMatch, walkthroughQuery],
+  );
+
+  // The category track scrolls continuously for far longer than five seconds
+  // alongside the rest of the page, so it needs a control that is not hover —
+  // CSS already pauses it on hover, which no keyboard or touch user can reach.
+  const [marqueePaused, setMarqueePaused] = useState(false);
 
   const trendingTools = useMemo(
     () => [...TOOLS].sort((a, b) => b.reviewCount - a.reviewCount).slice(0, 3).map(buildCard),
@@ -79,214 +93,298 @@ export function Home() {
       <PhotoBackdrop
         photo={PRODUCT_STILL_PHOTO}
         alt="A code editor open on a dark screen"
-        width={900}
+        width={800}
         vivid
       />
       <div aria-hidden="true" style={{ position: 'absolute', inset: 0, boxShadow: c.vignette }} />
     </div>
   );
 
-  const previewPanel = productStill(layout.heroVideoHeight);
+  // Reveal travel is a class now (see .reveal in index.css), so the section style is
+  // pure layout again and no longer varies per section.
+  /**
+   * The artifact shown beside each step. Steps that have something real to show get
+   * it; the others get nothing rather than a placeholder.
+   */
+  const buildWalkthroughPanel = (index) => {
+    if (index === 0) {
+      return (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', maxWidth: 520 }}>
+          {EXAMPLE_PROMPTS.slice(0, 3).map((text) => (
+            <span
+              key={text}
+              style={{
+                fontSize: 12.5,
+                padding: '8px 13px',
+                borderRadius: 8,
+                border: `1px solid ${c.ink(0.14)}`,
+                background: c.ink(0.02),
+                color: c.ink(0.7),
+              }}
+            >
+              {text}
+            </span>
+          ))}
+        </div>
+      );
+    }
 
-  const section = (reveal) => ({
+    if (!walkthrough) return null;
+
+    if (index === 1) {
+      return (
+        <div
+          style={{
+            maxWidth: 460,
+            padding: '18px 20px',
+            borderRadius: 12,
+            border: `1px solid ${c.ink(0.12)}`,
+            borderLeft: `2px solid ${c.signal}`,
+            background: c.ink(0.03),
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <span id="walkthrough-tool" style={{ fontSize: 16, fontWeight: 600 }}>
+              {walkthrough.tool.name}
+            </span>
+            <MatchScore score={walkthrough.score} size="28px" />
+          </div>
+          <div style={{ marginTop: 14 }}>
+            <MatchBar score={walkthrough.score} labelId="walkthrough-tool" height={14} />
+          </div>
+        </div>
+      );
+    }
+
+    if (index === 2) {
+      const reasons = (walkthrough.reasons || []).slice(0, 3);
+      return (
+        <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8, maxWidth: 460 }}>
+          {reasons.map((reason) => (
+            <li
+              key={reason}
+              style={{ display: 'flex', gap: 8, fontSize: 13.5, lineHeight: 1.5, color: c.ink(0.75) }}
+            >
+              <span aria-hidden="true" style={{ color: c.signal, flex: 'none', marginTop: 1 }}>
+                <Icon name="check" size={13} />
+              </span>
+              {reason}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    return null;
+  };
+
+  const section = () => ({
     maxWidth: 1160,
     margin: '0 auto',
     padding: `0 ${layout.sidePad} ${layout.sectionGap}`,
-    ...reveal.style,
   });
 
   return (
     <>
-      {/* ---------------------------------------------------------------- hero */}
-      <section data-screen-label="Home" style={{ position: 'relative', overflow: 'hidden', padding: layout.heroPad }}>
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 1,
-            maxWidth: 1240,
-            margin: '0 auto',
-            display: 'flex',
-            flexDirection: layout.heroSplitDir,
-            alignItems: 'center',
-            gap: layout.heroSplitGap,
-          }}
-        >
+      {/* ---------------------------------------------------------------- hero
+          The hero is the product: headline, then the finder itself. Results resolve
+          in place below the input, so the first thing a visitor sees Orbit do is the
+          one thing Orbit does — score the catalog against a requirement and say why.
+          ToolFinder owns everything from the input down. */}
+      <section
+        data-screen-label="Home"
+        style={{ position: 'relative', overflow: 'hidden', padding: layout.heroPad }}
+      >
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: layout.heroMaxW, margin: '0 auto' }}>
           <div
             style={{
-              flex: 1,
-              minWidth: 0,
-              width: '100%',
-              maxWidth: layout.heroTextMaxW,
-              textAlign: layout.heroTextAlign,
+              display: 'flex',
+              flexDirection: layout.heroSplitDir,
+              alignItems: 'flex-start',
+              gap: layout.heroSplitGap,
             }}
           >
-            <h1
-              style={{
-                fontFamily: 'Inter',
-                fontWeight: 800,
-                fontSize: layout.heroTitleSize,
-                lineHeight: 1.02,
-                letterSpacing: '-0.038em',
-                margin: '0 0 22px',
-              }}
-            >
-              <span
-                style={{
-                  display: 'block',
-                  animation: 'fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.12s both',
-                }}
-              >
-                Find the right AI.
-              </span>
-              <span
-                style={{
-                  display: 'block',
-                  color: c.ink(0.55),
-                  animation: 'fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.24s both',
-                }}
-              >
-                Not just another AI.
-              </span>
-            </h1>
-
-            <p
-              style={{
-                fontSize: layout.heroSubSize,
-                lineHeight: 1.62,
-                color: c.ink(0.62),
-                margin: 0,
-                maxWidth: 520,
-                marginLeft: layout.heroSubMarginAuto ? 'auto' : undefined,
-                marginRight: layout.heroSubMarginAuto ? 'auto' : undefined,
-                animation: 'fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.38s both',
-              }}
-            >
-              Tell Orbit what you&apos;re trying to accomplish. Discover, compare, and choose the AI
-              tools that actually fit your needs.
-            </p>
-          </div>
-
-          {/* browser-chrome video panel */}
-          <div
+            <div style={{ flex: '1 1 0', minWidth: 0, width: '100%' }}>
+          {/* Announcement pill. Carries the live catalog size rather than a slogan,
+              and links to the catalog it is counting. */}
+          <Hoverable
+            as="a"
+            href="#/discover"
             style={{
-              flex: 1,
-              minWidth: 0,
-              width: '100%',
-              display: layout.heroVideoDisplay,
-              position: 'relative',
-              animation: 'mediaIn 1.1s cubic-bezier(0.16,1,0.3,1) 0.3s both',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 9,
+              padding: '5px 14px 5px 6px',
+              borderRadius: 999,
+              border: `1px solid ${c.ink(0.14)}`,
+              background: c.ink(0.03),
+              textDecoration: 'none',
+              color: c.ink(0.75),
+              fontSize: 13,
+              marginBottom: 26,
+              transition: 'border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease',
+              animation: 'fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) both',
+            }}
+            hoverStyle={{ borderColor: c.signal, background: c.signalTrack, color: c.text }}
+          >
+            <span
+              className="num"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '3px 9px',
+                borderRadius: 999,
+                background: c.signalTrack,
+                color: c.signalInk,
+                fontSize: 11,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+              }}
+            >
+              {TOOLS.length} tools
+            </span>
+            Scored across {CATEGORIES.length} categories
+            <span aria-hidden="true" style={{ display: 'flex', color: c.ink(0.5) }}>
+              <Icon name="arrowRight" size={13} />
+            </span>
+          </Hoverable>
+
+          <h1
+            className="hero-display"
+            style={{
+              fontWeight: 600,
+              fontSize: layout.heroTitleSize,
+              lineHeight: 1.0,
+              letterSpacing: '-0.022em',
+              margin: '0 0 24px',
             }}
           >
+            <span
+              style={{
+                display: 'block',
+                animation: 'fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.1s both',
+              }}
+            >
+              Find the right AI.
+            </span>
+            <span
+              style={{
+                display: 'block',
+                color: c.ink(0.78),
+                animation: 'fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s both',
+              }}
+            >
+              Not just another AI.
+            </span>
+          </h1>
+
+          <p
+            style={{
+              fontSize: layout.heroSubSize,
+              lineHeight: 1.5,
+              color: c.ink(0.78),
+              margin: '0 0 22px',
+              maxWidth: 470,
+              animation: 'fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s both',
+            }}
+          >
+            Describe the job, not the tool.
+            <br />
+            Orbit scores the catalog and shows its working.
+          </p>
+
+          {/* The reference puts a platform line under its CTA; this is the same slot,
+              carrying facts that are true of Orbit rather than a list of app stores. */}
+          <p
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 8,
+              fontSize: 12.5,
+              color: c.ink(0.58),
+              margin: 0,
+              animation: 'fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.36s both',
+            }}
+          >
+            <span aria-hidden="true" style={{ display: 'flex', color: c.signal }}>
+              <Icon name="checkCircle" size={14} />
+            </span>
+            No account needed
+            <span aria-hidden="true" style={{ color: c.ink(0.25) }}>·</span>
+            Runs locally
+            <span aria-hidden="true" style={{ color: c.ink(0.25) }}>·</span>
+            Every match explained
+          </p>
+
+            </div>
+
             <div
-              aria-hidden="true"
-              style={{
-                position: 'absolute',
-                inset: '8% 6%',
-                borderRadius: '50%',
-                background: `radial-gradient(closest-side, ${c.accentGlow}, transparent 70%)`,
-                filter: 'blur(40px)',
-                pointerEvents: 'none',
-                animation: 'floatGlow 11s ease-in-out infinite',
-              }}
-            />
-            <Hoverable
               style={{
                 position: 'relative',
-                borderRadius: 18,
-                overflow: 'hidden',
-                border: `1px solid ${c.accentBorder}`,
-                boxShadow: `0 0 0 1px ${c.ring}, ${c.shadowLg}`,
-                transition:
-                  'transform 0.6s cubic-bezier(0.16,1,0.3,1), box-shadow 0.6s cubic-bezier(0.16,1,0.3,1)',
-              }}
-              hoverStyle={{
-                transform: 'translateY(-4px)',
-                boxShadow: `0 0 0 1px ${c.hoverRing}, ${c.shadowLg}, 0 0 60px ${c.accentGlow}`,
+                flex: `0 1 ${layout.heroMediaBasis}`,
+                minWidth: 0,
+                width: '100%',
+                animation: 'mediaIn 1.1s cubic-bezier(0.16,1,0.3,1) 0.35s both',
               }}
             >
-              <div
-                style={{
-                  height: 34,
-                  background: c.chrome,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '0 12px',
-                  borderBottom: `1px solid ${c.ink(0.08)}`,
-                }}
-              >
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#e0605a' }} />
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#dbb15a' }} />
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#5aa876' }} />
+              <div style={{ position: 'relative' }}>
+                <HeroVideo
+                  src={HERO_VIDEO}
+                  label="See Orbit in action"
+                  caption="Watch how Orbit helps you find the perfect AI tool"
+                  fallback={productStill(320)}
+                />
               </div>
-
-              <AutoVideo
-                src={HERO_VIDEO}
-                sound
-                style={{ display: 'block', width: '100%', height: layout.heroVideoHeight, objectFit: 'cover' }}
-                fallback={previewPanel}
-              />
-
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  top: 34,
-                  pointerEvents: 'none',
-                  boxShadow: c.vignette,
-                }}
-              />
-            </Hoverable>
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* -------------------------------------------------- find my ai tool */}
-      <section
-        ref={finderReveal.ref}
-        style={{
-          maxWidth: 1160,
-          margin: '0 auto',
-          padding: `${layout.finderPadTop} ${layout.sidePad} ${layout.finderPadBottom}`,
-          ...finderReveal.style,
-        }}
-      >
-        <div
-          style={{
-            position: 'relative',
-            background: c.surface,
-            border: `1px solid ${c.accentBorder}`,
-            borderRadius: 18,
-            padding: layout.finderPad,
-            boxShadow: `0 0 0 1px ${c.ring}, ${c.shadowMd}`,
-          }}
-        >
           <div
-            aria-hidden="true"
             style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius: 18,
-              background:
-                `radial-gradient(120% 140% at 50% -20%, ${c.accentSoft}, transparent 60%)`,
-              pointerEvents: 'none',
+              marginTop: layout.heroFinderGap,
+              animation: 'fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.45s both',
             }}
-          />
-          <div style={{ position: 'relative' }}>
+          >
             <ToolFinder />
           </div>
         </div>
       </section>
 
       {/* ------------------------------------------------ popular categories */}
-      <section ref={categoriesReveal.ref} style={section(categoriesReveal)}>
+      <section ref={categoriesReveal.ref} className={categoriesReveal.className} style={section()}>
         <SectionHeading
           title="Popular Categories"
           action={
-            <a href="#/categories" style={{ textDecoration: 'none', fontSize: 13, color: c.accentText }}>
-              View all
-              <Icon name="chevronRight" size={13} style={{ display: 'inline-block', verticalAlign: 'middle' }} />
-            </a>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <Hoverable
+                as="button"
+                type="button"
+                onClick={() => setMarqueePaused((v) => !v)}
+                aria-pressed={marqueePaused}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: 12,
+                  fontFamily: 'Inter, system-ui, sans-serif',
+                  padding: '6px 12px',
+                  borderRadius: 999,
+                  border: `1px solid ${c.ink(0.14)}`,
+                  background: 'transparent',
+                  color: c.ink(0.65),
+                  cursor: 'pointer',
+                  transition: 'color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease',
+                }}
+                hoverStyle={{ color: c.text, borderColor: c.accentBorder, background: c.accentSoft }}
+              >
+                <Icon name={marqueePaused ? 'play' : 'pause'} size={12} />
+                {marqueePaused ? 'Resume Scrolling' : 'Pause Scrolling'}
+              </Hoverable>
+              <a href="#/categories" style={{ textDecoration: 'none', fontSize: 13, color: c.accentText }}>
+                View all
+                <Icon name="chevronRight" size={13} style={{ display: 'inline-block', verticalAlign: 'middle' }} />
+              </a>
+            </span>
           }
         />
         <div
@@ -304,6 +402,7 @@ export function Home() {
               gap: 14,
               width: 'max-content',
               animation: `marqueeScroll ${layout.marqueeDuration} linear infinite`,
+              animationPlayState: marqueePaused ? 'paused' : 'running',
             }}
           >
             {marqueeCategories.map((cat, i) => (
@@ -311,6 +410,7 @@ export function Home() {
                 key={cat.id + '-' + i}
                 category={cat}
                 count={countByCategory[cat.id] || 0}
+                duplicate={i >= CATEGORIES.length}
               />
             ))}
           </div>
@@ -340,7 +440,7 @@ export function Home() {
       </section>
 
       {/* ------------------------------------------------------- trending */}
-      <section ref={trendingReveal.ref} style={section(trendingReveal)}>
+      <section ref={trendingReveal.ref} className={trendingReveal.className} style={section()}>
         <SectionHeading
           title="Trending AI Tools"
           action={
@@ -350,7 +450,10 @@ export function Home() {
             </a>
           }
         />
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${layout.toolGridCols},1fr)`, gap: 16 }}>
+        <div
+          className="reveal-group"
+          style={{ display: 'grid', gridTemplateColumns: `repeat(${layout.toolGridCols},1fr)`, gap: 16 }}
+        >
           {trendingTools.map((t) => (
             <ToolCard key={t.id} tool={t} />
           ))}
@@ -358,7 +461,7 @@ export function Home() {
       </section>
 
       {/* ------------------------------------------------------- featured */}
-      <section ref={featuredReveal.ref} style={section(featuredReveal)}>
+      <section ref={featuredReveal.ref} className={featuredReveal.className} style={section()}>
         <SectionHeading
           title="Featured Tools"
           action={
@@ -367,7 +470,10 @@ export function Home() {
             </span>
           }
         />
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${layout.toolGridCols},1fr)`, gap: 16 }}>
+        <div
+          className="reveal-group"
+          style={{ display: 'grid', gridTemplateColumns: `repeat(${layout.toolGridCols},1fr)`, gap: 16 }}
+        >
           {featuredTools.map((t) => (
             <ToolCard key={t.id} tool={t} />
           ))}
@@ -375,7 +481,11 @@ export function Home() {
       </section>
 
       {/* ------------------------------------------------------- showcase */}
-      <section ref={showcaseReveal.ref} style={{ ...section(showcaseReveal), textAlign: 'center' }}>
+      <section
+        ref={showcaseReveal.ref}
+        className={showcaseReveal.className}
+        style={{ ...section(), textAlign: 'center' }}
+      >
         <div
           style={{
             display: 'inline-flex',
@@ -407,90 +517,56 @@ export function Home() {
           From a plain-language requirement to a ranked, explained recommendation — watch how Orbit
           organizes the AI ecosystem.
         </p>
-        <div
-          style={{
-            position: 'relative',
-            maxWidth: 920,
-            margin: '0 auto',
-            borderRadius: 18,
-            overflow: 'hidden',
-            boxShadow: `0 0 0 1px ${c.ring}, ${c.shadowLg}`,
-            background: c.surface,
-          }}
-        >
-          <AutoVideo
-            src={SHOWCASE_VIDEO}
-            style={{ display: 'block', width: '100%', height: 'auto', maxHeight: 520, objectFit: 'cover' }}
-            fallback={
-              productStill(420)
-            }
-          />
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              boxShadow: c.vignetteSoft,
-              pointerEvents: 'none',
-            }}
-          />
+        <div style={{ maxWidth: 1040, margin: '0 auto' }}>
+          <ProductDemo />
         </div>
       </section>
 
-      {/* ----------------------------------------------------- how it works */}
-      <section ref={howReveal.ref} style={section(howReveal)}>
-        <h2 style={{ fontSize: layout.sectionTitleSize, margin: '0 0 8px', textAlign: 'center' }}>How Orbit Works</h2>
-        <p
+      {/* ----------------------------------------------------- how it works
+          Read by scrolling: the step list pins on the left while each step passes
+          through on the right. See StepScroller. */}
+      <section ref={howReveal.ref} className={howReveal.className} style={section()}>
+        <h2
+          className="hero-display"
           style={{
-            textAlign: 'center',
-            color: c.ink(0.6),
-            margin: '0 0 30px',
-            fontSize: 14,
+            fontWeight: 600,
+            fontSize: 'clamp(28px, 3.4vw, 44px)',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.1,
+            margin: '0 0 10px',
+            maxWidth: 620,
           }}
         >
-          From requirement to decision in four steps
+          From requirement to decision.
+        </h2>
+        <p
+          style={{
+            color: c.ink(0.65),
+            margin: '0 0 48px',
+            fontSize: 15,
+            maxWidth: 520,
+            lineHeight: 1.6,
+          }}
+        >
+          Four steps, and the scoring is the same on every one of them.
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${layout.howGridCols},1fr)`, gap: 16 }}>
-          {HOW_STEPS.map((s) => (
-            <div
-              key={s.n}
-              style={{
-                background: c.surface,
-                borderRadius: 10,
-                padding: 22,
-                boxShadow: `0 0 0 1px ${c.ring}`,
-              }}
-            >
-              <div
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: 9,
-                  background: c.accentSoftStrong,
-                  color: c.accentText,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 14,
-                  fontFamily: 'Inter',
-                  fontWeight: 600,
-                  fontSize: 13,
-                }}
-              >
-                {s.n}
-              </div>
-              <h3 style={{ fontSize: 16, margin: '0 0 6px' }}>{s.title}</h3>
-              <p style={{ fontSize: 13, color: c.ink(0.65), margin: 0, lineHeight: 1.55 }}>
-                {s.body}
-              </p>
-            </div>
-          ))}
-        </div>
+
+        <StepScroller
+          ariaLabel="How Orbit works"
+          steps={HOW_STEPS.map((step, i) => ({
+            ...step,
+            panel: buildWalkthroughPanel(i),
+          }))}
+        />
       </section>
 
       {/* ---------------------------------------------------------- why orbit */}
-      <section ref={whyReveal.ref} style={section(whyReveal)}>
+      <section ref={whyReveal.ref} className={whyReveal.className} style={section()}>
         <h2 style={{ fontSize: layout.sectionTitleSize, margin: '0 0 20px', textAlign: 'center' }}>Why Orbit</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${layout.howGridCols},1fr)`, gap: 16 }}>
+        <div
+          className="reveal-group"
+          style={{ display: 'grid', gridTemplateColumns: `repeat(${layout.howGridCols},1fr)`, gap: 16 }}
+        >
           {WHY_POINTS.map((w) => (
             <div
               key={w.title}
@@ -508,59 +584,14 @@ export function Home() {
         </div>
       </section>
 
-      {/* ---------------------------------------------------------------- cta */}
-      <section
-        ref={ctaReveal.ref}
-        style={{
-          maxWidth: 900,
-          margin: '0 auto',
-          padding: `0 ${layout.sidePad} ${layout.sectionGap}`,
-          textAlign: 'center',
-          ...ctaReveal.style,
-        }}
-      >
-        <div
-          style={{
-            background: c.ctaPanel,
-            border: `1px solid ${c.accentBorder}`,
-            borderRadius: 16,
-            padding: layout.ctaPad,
-          }}
-        >
-          <h2 style={{ fontSize: layout.sectionTitleSize, margin: '0 0 12px' }}>Stop guessing. Start matching.</h2>
-          <p
-            style={{
-              color: c.ink(0.68),
-              margin: '0 auto 24px',
-              fontSize: 14,
-              maxWidth: 480,
-            }}
-          >
-            Describe what you need once — Orbit ranks the AI tools that actually fit, and explains why.
-          </p>
-          <a
-            href="#/advisor"
-            style={{
-              textDecoration: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              background: c.accent,
-              color: c.onAccent,
-              fontWeight: 600,
-              padding: '13px 26px',
-              borderRadius: 9,
-              fontSize: 14,
-            }}
-          >
-            Ask the AI Advisor
-            <Icon name="arrowRight" size={14} />
-          </a>
-        </div>
-      </section>
-
-      {/* -------------------------------------------------- suggest a tool */}
-      <SuggestTool />
+      {/* ------------------------------------------- closing discovery run
+          One environment, not two sections. DiscoveryFlow owns the ground, the
+          ambient light, the spacing between the two, and the single measured path
+          that runs from the orbital figure down to the first contribution step. */}
+      <DiscoveryFlow gap={layout.flowGap}>
+        <AdvisorCTA />
+        <SuggestTool />
+      </DiscoveryFlow>
     </>
   );
 }
