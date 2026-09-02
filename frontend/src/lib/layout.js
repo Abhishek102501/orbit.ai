@@ -15,7 +15,13 @@ export function layoutFor(vw) {
     isDesktopNav,
 
     // chrome
+    // The header is a floating capsule: the outer padding positions it, the inner
+    // padding shapes the pill itself.
     navPadding: isMobile ? '14px 16px' : '16px 40px',
+    navOuterPad: isMobile
+      ? 'calc(10px + env(safe-area-inset-top)) 14px 10px'
+      : 'calc(14px + env(safe-area-inset-top)) 40px 14px',
+    navPillPad: isMobile ? '8px 10px 8px 14px' : '7px 8px 7px 18px',
     sidePad: isMobile ? '18px' : '40px',
     sectionGap: isMobile ? '52px' : '76px',
     pagePad: isMobile ? '32px 18px 60px' : '48px 40px 80px',

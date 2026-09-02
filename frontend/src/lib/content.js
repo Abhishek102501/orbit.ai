@@ -165,3 +165,28 @@ export const SUGGEST_STEPS = [
   { n: '02', title: 'We review', body: 'Our team checks the tool and the information.' },
   { n: '03', title: 'We add', body: 'Approved tools join the Orbit directory.' },
 ];
+
+/* ---------------------------------------------------------------------------
+   Header navigation
+--------------------------------------------------------------------------- */
+
+/**
+ * The primary nav. Items with an `href` point at routes the hash router resolves;
+ * items marked `soon` have no destination yet and render as inert buttons rather than
+ * links, so nothing in the header can navigate to the 404 screen. Give one an `href`
+ * (and a `match` for the active state) and it becomes a real link with no other change.
+ */
+export const NAV_ITEMS = [
+  { label: 'Home', href: '#/', match: 'home' },
+  { label: 'Explore', href: '#/discover', match: 'discover' },
+  { label: 'Categories', href: '#/categories', match: 'categories' },
+  { label: 'Features', soon: true },
+  { label: 'Pricing', soon: true },
+  { label: 'About', soon: true },
+];
+
+/** Header account actions. Same rule: no destination yet, so they are inert buttons. */
+export const NAV_ACTIONS = {
+  signIn: { label: 'Sign in', soon: true },
+  getStarted: { label: 'Get Started', soon: true },
+};

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import Icon from './Icon.jsx';
 import { useOrbit } from '../store/OrbitProvider.jsx';
+import { NAV_ACTIONS } from '../lib/content.js';
 
 export function MobileNav() {
   const { c, mobileNavOpen, toggleMobileNav, saved } = useOrbit();
@@ -122,13 +123,46 @@ export function MobileNav() {
         <a href="#/compare" onClick={toggleMobileNav} style={link}>
           Compare
         </a>
-        <a
-          href="#/saved"
-          onClick={toggleMobileNav}
-          style={{ ...link, borderBottom: 'none' }}
-        >
+        <a href="#/saved" onClick={toggleMobileNav} style={link}>
           Saved{saved.length ? ' (' + saved.length + ')' : ''}
         </a>
+
+        {/* Account actions mirror the desktop capsule. Inert until they are wired — see
+            NAV_ACTIONS in lib/content.js. */}
+        <div style={{ display: 'grid', gap: 10, marginTop: 20 }}>
+          <button
+            type="button"
+            style={{
+              minHeight: 44,
+              borderRadius: 999,
+              border: `1px solid ${c.ink(0.16)}`,
+              background: 'transparent',
+              color: c.text,
+              fontSize: 14,
+              fontFamily: 'Inter, system-ui, sans-serif',
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+          >
+            {NAV_ACTIONS.signIn.label}
+          </button>
+          <button
+            type="button"
+            style={{
+              minHeight: 44,
+              borderRadius: 999,
+              border: `1px solid ${c.accent}`,
+              background: c.accent,
+              color: c.onAccent,
+              fontSize: 14,
+              fontFamily: 'Inter, system-ui, sans-serif',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            {NAV_ACTIONS.getStarted.label}
+          </button>
+        </div>
       </nav>
     </div>
   );
