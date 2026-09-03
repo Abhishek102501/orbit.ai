@@ -22,6 +22,7 @@ import ToolDetail from './src/pages/ToolDetail.jsx';
 import Compare from './src/pages/Compare.jsx';
 import Saved from './src/pages/Saved.jsx';
 import NotFound from './src/pages/NotFound.jsx';
+import News from './src/pages/News.jsx';
 import Header from './src/components/Header.jsx';
 import Footer from './src/components/Footer.jsx';
 
@@ -42,6 +43,7 @@ function makeCtx({ theme = 'dark', vw = 1280, route, saved = [], compareIds = []
     saved, compareIds, lastCriteria,
     toggleSave: noop, toggleCompare: noop, compareSavedNow: noop,
     toast: null, showToast: noop, mobileNavOpen: false, toggleMobileNav: noop,
+    suggestOpen: false, openSuggest: noop, closeSuggest: noop,
     heroQuery: '', setHeroQuery: noop,
     getTool: (id) => TOOLS.find((t) => t.id === id),
     getToolBySlug: (s) => TOOLS.find((t) => t.slug === s),
@@ -94,6 +96,7 @@ const out = [
   render('Saved (empty)', Saved, { route: r('saved') }),
   render('Saved (2 tools)', Saved, { route: r('saved'), saved: ['t01', 't05'] }),
   render('NotFound', NotFound, { route: r('notfound') }),
+  render('News', News, { route: r('news') }),
   render('Header', Header, { route: r('home'), saved: ['t01'] }),
   render('Footer', Footer, { route: r('home') }),
 ];
@@ -118,6 +121,12 @@ const headerWith = (opts) =>
     </OrbitContext.Provider>,
   );
 const navEmpty = headerWith({ route: r('home') });
+// News rendered on its own: the checks below are about that page, not the home page.
+const newsHtml = renderToString(
+  <OrbitContext.Provider value={makeCtx({ route: r('news') })}>
+    <News />
+  </OrbitContext.Provider>,
+);
 const navFull = headerWith({ route: r('saved'), saved: ['t01', 't02'], compareIds: ['t03'] });
 const checks = [
   ['hero headline', /Find the right AI\./],
@@ -170,6 +179,36 @@ const checks = [
       ['#/saved', '#/compare', '#/advisor'].every((h) => navEmpty.includes('href="' + h + '"')),
   ],
   ['nav: zero counts hidden', () => !navEmpty.includes('aria-label="Saved (')],
+  [
+    'nav: all four primary items present',
+    () => ['Discover', 'Categories', 'AI News', 'Submit Tool'].every((t) => navEmpty.includes(t)),
+  ],
+  // Submit Tool opens the shared dialog, so it must be a button and must not claim a
+  // route it does not have.
+  ['nav: submit tool is not a link', () => !navEmpty.includes('href="#/submit')],
+  ['news: all nine sections render', () => {
+    const flat = newsHtml.replace(/<!-- -->/g, '');
+    return [
+      'AI intelligence',            // 1 hero
+      'Filter news by kind',        // 2 category filters
+      'Featured now',               // 3 featured carousel
+      'Breaking',                   // 4 ticker
+      'Latest stories',             // 5
+      'Model releases',             // 6
+      'AI tools &',                 // 7
+      'Research &',                 // 8
+      'Trending topics',            // 9
+    ].every((t) => flat.includes(t));
+  }],
+  // Sample entries must never link out to an article that does not exist.
+  ['news: no outbound article links', () => !newsHtml.includes('target="_blank"')],
+  ['news: carousel is a labelled carousel', () => newsHtml.includes('aria-roledescription="carousel"')],
+  ['news: ticker duplicates exactly once', () => {
+    const tracks = (newsHtml.match(/class="ticker-track"/g) || []).length;
+    const lists = (newsHtml.match(/aria-hidden="true"[^>]*>\s*<li/g) || []).length;
+    return tracks === 1;
+  }],
+  ['news: no fabricated headlines', () => newsHtml.includes('does not publish a news feed yet')],
   [
     'nav: counts render and pluralise',
     () =>

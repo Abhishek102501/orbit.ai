@@ -6,7 +6,8 @@ import { NAV_CTA, NAV_ITEMS, NAV_UTILITY } from '../lib/content.js';
 const FOCUSABLE = 'a[href], button:not([disabled])';
 
 export function MobileNav() {
-  const { c, mobileNavOpen, toggleMobileNav, saved, compareIds } = useOrbit();
+  const { c, mobileNavOpen, toggleMobileNav, saved, compareIds, openSuggest } =
+    useOrbit();
   const closeRef = useRef(null);
   const panelRef = useRef(null);
   const restoreFocusTo = useRef(null);
@@ -134,11 +135,33 @@ export function MobileNav() {
 
         {/* Same three tiers as the desktop capsule, read from the same data, so the
             two surfaces cannot drift apart. */}
-        {NAV_ITEMS.map((item) => (
-          <a key={item.href} href={item.href} onClick={toggleMobileNav} style={link}>
-            {item.label}
-          </a>
-        ))}
+        {NAV_ITEMS.map((item) =>
+          item.action ? (
+            // Same control as the desktop bar: opens the shared dialog. `openSuggest`
+            // closes the drawer itself so the dialog is not left behind it.
+            <button
+              key={item.action}
+              type="button"
+              onClick={openSuggest}
+              style={{
+                ...link,
+                textAlign: 'left',
+                background: 'none',
+                border: 'none',
+                borderBottom: link.borderBottom,
+                font: 'inherit',
+                fontSize: 16,
+                cursor: 'pointer',
+              }}
+            >
+              {item.label}
+            </button>
+          ) : (
+            <a key={item.href} href={item.href} onClick={toggleMobileNav} style={link}>
+              {item.label}
+            </a>
+          ),
+        )}
 
         {NAV_UTILITY.map((item) => {
           const n = item.count === 'saved' ? saved.length : compareIds.length;

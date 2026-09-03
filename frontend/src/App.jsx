@@ -2,6 +2,7 @@ import Header from './components/Header.jsx';
 import MobileNav from './components/MobileNav.jsx';
 import Footer from './components/Footer.jsx';
 import Toast from './components/Toast.jsx';
+import SuggestToolModal from './components/SuggestToolModal.jsx';
 import Splash from './components/Splash.jsx';
 import Home from './pages/Home.jsx';
 import Discover from './pages/Discover.jsx';
@@ -11,6 +12,7 @@ import ToolDetail from './pages/ToolDetail.jsx';
 import Compare from './pages/Compare.jsx';
 import Saved from './pages/Saved.jsx';
 import NotFound from './pages/NotFound.jsx';
+import News from './pages/News.jsx';
 import { useOrbit } from './store/OrbitProvider.jsx';
 
 const SCREENS = {
@@ -21,6 +23,7 @@ const SCREENS = {
   tool: ToolDetail,
   compare: Compare,
   saved: Saved,
+  news: News,
   notfound: NotFound,
 };
 
@@ -88,6 +91,8 @@ export function App() {
 
       <Footer />
       <Toast />
+      {/* One dialog for the whole app: the header opens it from any route. */}
+      <SuggestToolModal />
     </div>
   );
 }

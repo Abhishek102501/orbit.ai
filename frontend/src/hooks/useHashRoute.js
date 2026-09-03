@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const KNOWN = ['discover', 'categories', 'advisor', 'compare', 'saved'];
+const KNOWN = ['discover', 'categories', 'advisor', 'compare', 'saved', 'news'];
 
 /** Mirrors parseRoute() from the design: #/, #/discover?category=x, #/tool/:slug, … */
 export function parseRoute() {

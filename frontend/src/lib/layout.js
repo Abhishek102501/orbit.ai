@@ -39,6 +39,11 @@ export function layoutFor(vw) {
     footerCategoryCols: isMobile ? 2 : isTablet ? 2 : 2,
     footerNewsletterDir: isMobile || isTablet ? 'column' : 'row',
     mobileMenuBtnDisplay: isDesktopNav ? 'none' : 'flex',
+    // Four primary items, two utility actions, a theme toggle and the CTA is a lot
+    // for one row. Above this width the utility actions carry their labels; below
+    // it they fall back to icon plus count, which is what keeps the bar from
+    // crowding without hiding anything.
+    navUtilityLabels: vw >= 1240,
 
     // grids
     catGridCols: isMobile ? 2 : isTablet ? 3 : 4,
@@ -57,14 +62,21 @@ export function layoutFor(vw) {
     // The hero is the finder: one column, left-aligned, headline straight into the
     // input. It carries its own bottom padding now that the separate "Find My AI
     // Tool" section below it is gone.
-    heroPad: isMobile ? '28px 18px 52px' : isTablet ? '52px 40px 72px' : '72px 40px 92px',
-    // Matches the header capsule so the hero's left edge lines up with the wordmark.
-    heroMaxW: 1240,
+    // Top padding sets the distance from the navbar. 72px put 92px of empty canvas
+    // above the eyebrow, which read as the hero floating rather than following the
+    // bar. The bottom is trimmed to match, since the finder already carries its own
+    // spacing underneath.
+    heroPad: isMobile ? '24px 18px 44px' : isTablet ? '36px 40px 60px' : '44px 40px 72px',
+    // The page content grid, not the header capsule. Every other section is 1160, so
+    // a 1240 hero started 40px outside the column everything below it lines up with —
+    // which is what made it read as floating on its own canvas rather than sitting on
+    // the page. The capsule stays wider on purpose: it is a floating bar, not content.
+    heroMaxW: 1160,
     // Copy on the left, the product video on the right; they stack below desktop so
     // neither column gets squeezed. The finder spans the full width underneath both.
     heroSplitDir: isMobile || isTablet ? 'column' : 'row',
-    heroSplitGap: isMobile ? '32px' : '48px',
-    heroMediaBasis: isMobile || isTablet ? '100%' : '500px',
+    heroSplitGap: isMobile ? '32px' : '40px',
+    heroMediaBasis: isMobile || isTablet ? '100%' : '460px',
     heroFinderGap: isMobile ? '36px' : '52px',
     // Fluid between the breakpoints so the 320-430 and 720-1080 ranges scale
     // continuously instead of stepping. The clamp bounds are the sizes the design

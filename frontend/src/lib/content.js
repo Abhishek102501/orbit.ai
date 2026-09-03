@@ -245,6 +245,11 @@ export const SUGGEST_STEPS = [
 export const NAV_ITEMS = [
   { label: 'Discover', href: '#/discover', match: 'discover' },
   { label: 'Categories', href: '#/categories', match: 'categories' },
+  { label: 'AI News', href: '#/news', match: 'news' },
+  // Not a destination: this opens the submission dialog, which is mounted once in
+  // App and owned by the store. An `action` entry renders as a button rather than a
+  // link, so it never advertises a route it does not have.
+  { label: 'Submit Tool', action: 'suggest' },
 ];
 
 /**

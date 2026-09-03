@@ -11,14 +11,19 @@ import { NAV_CTA, NAV_ITEMS, NAV_UTILITY } from '../lib/content.js';
  * rendered destination-less items as inert buttons; nothing is marked `soon` any
  * more, so the branch is gone rather than left behind as unused logic.
  */
-function NavItem({ item, active }) {
+function NavItem({ item, active, onAction }) {
   const { c } = useOrbit();
+
+  // An entry with an `action` is a control, not a destination, so it renders as a
+  // button. Both share the styling: the tier reads as one row either way.
+  const isAction = !!item.action;
+  const interactive = isAction
+    ? { as: 'button', type: 'button', onClick: onAction }
+    : { as: 'a', href: item.href, 'aria-current': active ? 'page' : undefined };
 
   return (
     <Hoverable
-      as="a"
-      href={item.href}
-      aria-current={active ? 'page' : undefined}
+      {...interactive}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -35,6 +40,7 @@ function NavItem({ item, active }) {
         fontWeight: active ? 600 : 500,
         color: active ? c.text : c.ink(0.7),
         whiteSpace: 'nowrap',
+        cursor: 'pointer',
         transition: 'color 0.2s ease, background-color 0.2s ease',
       }}
       hoverStyle={{ color: c.text, background: c.ink(0.06) }}
@@ -55,7 +61,7 @@ function NavItem({ item, active }) {
  * The label is carried by `aria-label` and `title` rather than visible text, so the
  * icon is never the only thing naming the destination.
  */
-function UtilityAction({ item, count, active }) {
+function UtilityAction({ item, count, active, showLabel }) {
   const { c } = useOrbit();
   const label = count
     ? `${item.label} (${count} ${count === 1 ? 'item' : 'items'})`
@@ -74,7 +80,7 @@ function UtilityAction({ item, count, active }) {
         alignItems: 'center',
         gap: 6,
         height: 36,
-        padding: count ? '0 11px' : '0 9px',
+        padding: showLabel ? '0 12px' : count ? '0 11px' : '0 9px',
         borderRadius: 999,
         textDecoration: 'none',
         border: `1px solid ${active ? c.ink(0.18) : 'transparent'}`,
@@ -85,7 +91,12 @@ function UtilityAction({ item, count, active }) {
       }}
       hoverStyle={{ color: c.text, background: c.ink(0.07) }}
     >
-      <Icon name={item.icon} size={17} />
+      <Icon name={item.icon} size={16} />
+      {showLabel ? (
+        <span aria-hidden="true" style={{ fontSize: 13, fontWeight: 500 }}>
+          {item.label}
+        </span>
+      ) : null}
       {count ? (
         <span className="num" aria-hidden="true" style={{ fontSize: 11.5, color: c.accent }}>
           {count}
@@ -108,6 +119,7 @@ export function Header() {
     mobileNavOpen,
     saved,
     compareIds,
+    openSuggest,
   } = useOrbit();
 
   const themeLabel = isLight ? 'Switch to dark mode' : 'Switch to light mode';
@@ -191,10 +203,15 @@ export function Header() {
         {layout.isDesktopNav ? (
           <nav
             aria-label="Primary"
-            style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '0 auto' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 2, margin: '0 auto' }}
           >
             {NAV_ITEMS.map((item) => (
-              <NavItem key={item.href} item={item} active={route.name === item.match} />
+              <NavItem
+                key={item.href || item.action}
+                item={item}
+                active={!!item.match && route.name === item.match}
+                onAction={item.action === 'suggest' ? openSuggest : undefined}
+              />
             ))}
           </nav>
         ) : (
@@ -210,6 +227,7 @@ export function Header() {
                   item={item}
                   count={counts[item.count]}
                   active={route.name === item.match}
+                  showLabel={layout.navUtilityLabels}
                 />
               ))}
 

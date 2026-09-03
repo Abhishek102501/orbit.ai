@@ -821,6 +821,168 @@ span:has(> .sp-avatar:hover) {
   }
 }
 
+/* ---- AI News ------------------------------------------------------------
+   Every rule here animates opacity or transform only. Nothing animates a
+   layout property, so no section can reflow while it plays.
+--------------------------------------------------------------------------- */
+
+/* Featured carousel: a crossfade between stacked slides. The inactive slide is
+   still in the grid cell holding the panel's height, so swapping stories of
+   different lengths cannot resize the panel. */
+.feat-slide {
+  opacity: 0;
+  transition: opacity 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.feat-slide.feat-on {
+  opacity: 1;
+}
+
+/* Content enters just behind the fade, one part after another. The travel is
+   small on purpose: this is a settling motion, not an arrival. */
+.feat-on .feat-1,
+.feat-on .feat-2,
+.feat-on .feat-3,
+.feat-on .feat-4,
+.feat-on .feat-art {
+  animation: featIn 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.feat-on .feat-1 { animation-delay: 60ms; }
+.feat-on .feat-2 { animation-delay: 130ms; }
+.feat-on .feat-3 { animation-delay: 200ms; }
+.feat-on .feat-4 { animation-delay: 270ms; }
+.feat-on .feat-art { animation-delay: 100ms; }
+
+@keyframes featIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Ticker: one list rendered twice, shifted exactly half its width, so the wrap
+   lands the copy where the original started and the loop has no seam. */
+.ticker-track {
+  animation: tickerRun 42s linear infinite;
+  will-change: transform;
+}
+
+@keyframes tickerRun {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.ticker-window:hover .ticker-track,
+.ticker-window:focus-within .ticker-track {
+  animation-play-state: paused;
+}
+
+.ticker-dot {
+  animation: tfPulse 2.4s ease-in-out infinite;
+}
+
+/* News cards: lift, edge, and a little internal motion. */
+.news-card {
+  transition:
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.news-card:hover,
+.news-card:focus-within {
+  transform: translateY(-4px);
+}
+
+.news-card .news-art {
+  transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.news-card:hover .news-art,
+.news-card:focus-within .news-art {
+  transform: scale(1.04);
+}
+
+.news-card .news-go {
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1), opacity 320ms ease;
+  opacity: 0.55;
+}
+
+.news-card:hover .news-go,
+.news-card:focus-within .news-go {
+  transform: translateX(3px);
+  opacity: 1;
+}
+
+/* Research list: an editorial run, so the row shifts rather than lifts. */
+.research-row {
+  transition: background-color 300ms ease, padding-left 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.research-row:hover,
+.research-row:focus-within {
+  padding-left: 8px;
+}
+
+.research-row .research-index,
+.research-row .research-kind {
+  transition: color 300ms ease;
+}
+
+.research-row .research-go {
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 300ms ease, transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.research-row:hover .research-go,
+.research-row:focus-within .research-go {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Rails scroll natively; the bar is slimmed rather than hidden so the affordance
+   survives for anyone who relies on seeing it. */
+.rail-scroller > * {
+  scroll-snap-align: start;
+}
+
+.rail-scroller::-webkit-scrollbar {
+  height: 6px;
+}
+
+.rail-scroller::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--orbit-rail-thumb, rgba(175, 179, 183, 0.18));
+}
+
+.rail-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track,
+  .ticker-dot {
+    animation: none !important;
+  }
+  .feat-slide,
+  .feat-on .feat-1,
+  .feat-on .feat-2,
+  .feat-on .feat-3,
+  .feat-on .feat-4,
+  .feat-on .feat-art {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  .news-card:hover,
+  .news-card:focus-within,
+  .news-card:hover .news-art,
+  .research-row:hover {
+    transform: none !important;
+    padding-left: 0 !important;
+  }
+}
+
 /* Visually hidden but available to screen readers. */
 .sr-only {
   position: absolute;

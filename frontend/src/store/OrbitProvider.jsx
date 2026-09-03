@@ -68,6 +68,10 @@ export function OrbitProvider({ children }) {
   // ---------------- ephemeral UI state ----------------
   const [toast, setToast] = useState(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  // Whether the tool-submission dialog is showing. It lives here rather than in
+  // the contribution section because the header opens it from every route, and
+  // that section is only mounted on the home page.
+  const [suggestOpen, setSuggestOpen] = useState(false);
   const [heroQuery, setHeroQuery] = useState('');
 
   // ---------------- discover ----------------
@@ -160,6 +164,7 @@ export function OrbitProvider({ children }) {
     root.style.setProperty('--orbit-step-hover', p.signalTrack);
     // The ground the contribution rail's nodes punch the thread out against.
     root.style.setProperty('--orbit-step-punch', p.bg);
+    root.style.setProperty('--orbit-rail-thumb', p.ink(0.18));
   }, [theme]);
 
   useEffect(
@@ -188,6 +193,12 @@ export function OrbitProvider({ children }) {
   }, []);
 
   const toggleMobileNav = useCallback(() => setMobileNavOpen((v) => !v), []);
+  const openSuggest = useCallback(() => {
+    // Closing the drawer first keeps the dialog from opening behind it on mobile.
+    setMobileNavOpen(false);
+    setSuggestOpen(true);
+  }, []);
+  const closeSuggest = useCallback(() => setSuggestOpen(false), []);
 
   const showToast = useCallback((msg) => {
     setToast(msg);
@@ -386,6 +397,9 @@ export function OrbitProvider({ children }) {
     showToast,
     mobileNavOpen,
     toggleMobileNav,
+    suggestOpen,
+    openSuggest,
+    closeSuggest,
 
     heroQuery,
     setHeroQuery,
